@@ -24,7 +24,7 @@ function App() {
       <Toaster />
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
+        {/* <Route path="/signup" element={<SignUp />} /> */}
         <Route path="/"  element={ <ProtectedRoute>  <DashboardPage /> </ProtectedRoute>} >
           <Route index element={<DashboardCards />} />
           <Route path="employees" element={<EmployeeDashboard />} />
@@ -37,6 +37,27 @@ function App() {
           <Route path="performance" element={<Performance />} />
           <Route path="payroll" element={<PayrollDashboard />} />
           <Route path="profile" element={<Profile />} />
+                 {/* 🔹 Connect Sidebar Routes */}
+          <Route path="dashboard" element={<DashboardCards />} />
+          <Route path="projects" element={<Jobs />} /> {/* Example placeholder */}
+          <Route path="agents" element={<Profile />} />
+          <Route path="cps" element={<Profile />} />
+          <Route path="leads" element={<Profile />} />
+
+          {/* Sales (Team Management) */}
+          <Route path="sales/bookings" element={<Candidate />} />
+          <Route path="sales/payments" element={<PayrollDashboard />} />
+          <Route path="sales/wallet" element={<Performance />} />
+
+          {/* Reports */}
+          <Route path="reports/leads" element={<DashboardCards />} />
+          <Route path="reports/sales" element={<DashboardCards />} />
+          <Route path="reports/payments" element={<DashboardCards />} />
+
+          {/* Other */}
+          <Route path="chat-support" element={<Messages />} />
+          <Route path="help" element={<Profile />} />
+          <Route path="settings" element={<Profile />} />
         </Route>
       </Routes>
     </>
