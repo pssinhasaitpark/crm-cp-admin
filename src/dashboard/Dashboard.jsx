@@ -9,7 +9,7 @@ const DashboardPage = () => {
       <Sidebar />
       <div style={{ flexGrow: 1 }}>
         <Header />
-        <div style={{ padding: "16px" }}>
+        <div style={{ padding: "8px 16px" }}>
         <Outlet />
         </div>
       </div>
