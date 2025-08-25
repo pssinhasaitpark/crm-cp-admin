@@ -302,8 +302,8 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const initialValues = {
-    email: "",
-    password: "",
+    email: "admin@gmail.com",
+    password: "12345678",
   };
 
   const validationSchema = Yup.object().shape({
