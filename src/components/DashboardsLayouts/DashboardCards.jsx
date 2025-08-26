@@ -1,194 +1,86 @@
 // import React from "react";
-// import Box from "@mui/material/Box";
-// import Card from "@mui/material/Card";
-// import CardContent from "@mui/material/CardContent";
-// import Typography from "@mui/material/Typography";
-// import {
-//   Mail,
-//   Work,
-//   Group,
-//   Description,
-//   Person,
-//   BeachAccess,
-//   ReceiptLong,
-// } from "@mui/icons-material";
+// import { FiUsers, FiUserCheck, FiClipboard } from "react-icons/fi";
+// import { useNavigate } from "react-router-dom";
+// import CountUp from "react-countup";
 
-// import { Link } from "react-router-dom";
-
-// const cards = [
-//   {
-//     id: 1,
-//     title: "Messages",
-//     count: 4,
-//     icon: <Mail sx={{ fontSize: 100, color: "#000" }} />,
-//     color: "#FFD400",
-//     path: "/messages",
-//   },
-//   {
-//     id: 2,
-//     title: "Jobs",
-//     count: 1,
-//     icon: <Work sx={{ fontSize: 100 }} />,
-//     color: "#3F3DFF",
-//     path: "/jobs",
-//   },
-//   {
-//     id: 3,
-//     title: "Candidates",
-//     count: 30,
-//     icon: <Group sx={{ fontSize: 100 }} />,
-//     color: "#4CAF50",
-//     path: "/candidates",
-//   },
-//   {
-//     id: 4,
-//     title: "Resumes",
-//     count: 2,
-//     icon: <Description sx={{ fontSize: 100 }} />,
-//     color: "#2B2B2B",
-//     path: "/resumes",
-//   },
-//   {
-//     id: 5,
-//     title: "Employee",
-//     count: 4,
-//     icon: <Person sx={{ fontSize: 100, color: "#000" }} />,
-//     color: "rgb(255, 153, 0)",
-//     path: "/employees",
-//   },
-//   {
-//     id: 6,
-//     title: "Leaves",
-//     count: 4,
-//     icon: <BeachAccess sx={{ fontSize: 100, color: "#000" }} />,
-//     color: "#4DD0E1",
-//     path: "/leaves",
-//   },
-//   {
-//     id: 7,
-//     title: "Payroll",
-//     count: 4,
-//     icon: <ReceiptLong sx={{ fontSize: 100, color: "#000" }} />,
-//     color: "#009688",
-//     path: "/payroll",
-//   },
+// const stats = [
+//   { id: 1, title: "Channel Partners", count: 236, icon: <FiUsers size={24} />, route: "/cps" },
+//   { id: 2, title: "Agents", count: 87, icon: <FiUsers size={24} />, route: "/agents" },
+//   { id: 3, title: "Leads", count: 198, icon: <FiClipboard size={24} />, route: "/leads" },
+//   { id: 4, title: "Bookings", count: 74, icon: <FiUserCheck size={24} />, route: "/sales/bookings" },
 // ];
 
-// const DashboardCards = () => {
+// const StatsCards = () => {
+//   const navigate = useNavigate();
+
 //   return (
-//     <Box
-//       sx={{
-//         width: "100%",
-//         display: "grid",
-//         // gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-//         gridTemplateColumns: "repeat(4, 1fr)",
-//         gap: 2,
-//       }}
-//     >
-//       {cards.map((card) => (
-//         <Link key={card.id} to={card.path} style={{ textDecoration: "none" }}>
-//           <Card
-//             sx={{
-//               backgroundColor: card.color,
-//               color: "#fff",
-//               borderRadius: 2,
-//               display: "flex",
-//               alignItems: "center",
-//               justifyContent: "space-evenly",
-//               gap: 2,
-//               boxShadow: 3,
-//               px: "10px",
-//               py: "40px",
-//               transition: "transform 0.2s ease-in-out",
-//               "&:hover": {
-//                 transform: "scale(1.02)",
-//                 cursor: "pointer",
-//               },
-//             }}
-//           >
-//             <Box>{card.icon}</Box>
-//             <Box>
-//               <Typography variant="h2" fontWeight="bold">
-//                 {card.count}
-//               </Typography>
-//               <Typography variant="subtitle2">{card.title}</Typography>
-//             </Box>
-//           </Card>
-//         </Link>
+//     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+//       {stats.map((stat) => (
+//         <div
+//           key={stat.id}
+//           onClick={() => navigate(stat.route)}
+//           className="flex items-center justify-between border border-gray-300 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-all cursor-pointer"
+//         >
+//           <div className="flex items-center justify-center w-12 h-12 rounded-md bg-gray-50 text-gray-700">
+//             {stat.icon}
+//           </div>
+//           <div className="text-right">
+//             <p className="text-sm text-gray-500">{stat.title}</p>
+//             <h2 className="text-xl font-semibold text-gray-900">
+//               <CountUp end={stat.count} duration={2} separator="," />
+//             </h2>
+//           </div>
+//         </div>
 //       ))}
-//     </Box>
+//     </div>
 //   );
 // };
 
-// export default DashboardCards;
+// export default StatsCards;
 import React from "react";
-import { Link } from "react-router-dom";
-import * as AspectRatio from "@radix-ui/react-aspect-ratio";
-import { FaEnvelope,FaUsers, FaUserTie, FaUserFriends } from "react-icons/fa";
-import { AiOutlineFileDone } from "react-icons/ai";
+import { FiUsers, FiUserCheck, FiClipboard } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import CountUp from "react-countup";
+import { useTheme } from "../../components/context/ThemeProvider"; // Custom hook from ThemeProvider
 
-const cards = [
-  {
-    id: 1,
-    title: "Channel Partners",
-    count: 4,
-    icon: <FaUserFriends size={70} />,
-    color: "#FFD400",
-    path: "/channel-partners",
-  },
-  {
-    id: 2,
-    title: "Agents",
-    count: 1,
-    icon: <FaUserTie size={70} />,
-    color: "#3F3DFF",
-    path: "/agents",
-  },
-  {
-    id: 3,
-    title: "Leads",
-    count: 30,
-    icon: <FaUsers size={70} />,
-    color: "#4CAF50",
-    path: "/leads",
-  },
-  {
-    id: 4,
-    title: "Bookings",
-    count: 2,
-    icon: <AiOutlineFileDone size={70} />,
-    color: "#2B2B2B",
-    path: "/bookings",
-  }
+const stats = [
+  { id: 1, title: "Channel Partners", count: 236, icon: <FiUsers size={24} />, route: "/cps" },
+  { id: 2, title: "Agents", count: 87, icon: <FiUsers size={24} />, route: "/agents" },
+  { id: 3, title: "Leads", count: 198, icon: <FiClipboard size={24} />, route: "/leads" },
+  { id: 4, title: "Bookings", count: 74, icon: <FiUserCheck size={24} />, route: "/sales/bookings" },
 ];
 
-const DashboardCards = () => {
+const StatsCards = () => {
+  const navigate = useNavigate();
+  const { theme } = useTheme(); // light or dark
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full">
-      {cards.map((card) => (
-        <Link
-          key={card.id}
-          to={card.path}
-          className="no-underline"
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      {stats.map((stat) => (
+        <div
+          key={stat.id}
+          onClick={() => navigate(stat.route)}
+          className={`flex items-center justify-between border rounded-lg p-4 shadow-sm hover:shadow-md transition-all cursor-pointer 
+            ${theme === "dark" ? "bg-[#1F2937] border-gray-700 text-gray-100" : "bg-white border-gray-300 text-gray-900"}`}
         >
           <div
-            className="rounded-2xl shadow-lg flex items-center justify-evenly gap-4 px-4 py-12 transition-transform duration-200 hover:scale-[1.02] cursor-pointer"
-            style={{ backgroundColor: card.color, color: "#fff" }}
+            className={`flex items-center justify-center w-12 h-12 rounded-md 
+            ${theme === "dark" ? "bg-[#1e1e1e] text-gray-200" : "bg-gray-50 text-gray-700"}`}
           >
-            {/* <AspectRatio.Root ratio={1 / 1} className="w-[80px] flex items-center justify-center"> */}
-             <span>
-              {card.icon}
-             </span>
-            {/* </AspectRatio.Root> */}
-            <div>
-              <h2 className="text-6xl font-bold">{card.count}</h2>
-              <p className="text-xl font-medium">{card.title}</p>
-            </div>
+            {stat.icon}
           </div>
-        </Link>
+          <div className="text-right">
+            <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
+              {stat.title}
+            </p>
+            <h2 className="text-xl font-semibold">
+              <CountUp end={stat.count} duration={2} separator="," />
+            </h2>
+          </div>
+        </div>
       ))}
     </div>
   );
 };
 
-export default DashboardCards;
+export default StatsCards;

@@ -105,59 +105,99 @@
 
 // export default Header;
 
-import React, { useState } from "react";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
-import AccountMenu from "../components/accountMenu/AccountMenu";
+// import React, { useState } from "react";
+// import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+// import { FaSearch } from "react-icons/fa";
+// import { IoNotificationsSharp } from "react-icons/io5";
+// import ThemeToggle from "./ThemeToggle";
+// import { useTheme } from "../components/context/ThemeProvider";
+
+// const Header = () => {
+//   const [dropdownValue, setDropdownValue] = useState("all");
+//   const { theme } = useTheme(); // ✅ Get current theme
+
+//   // ✅ Classes based on theme
+//   const bgHeader = theme === "dark" ? "bg-[#1e1e1e] border-b border-gray-700 " : "bg-[#E3EDF9]";
+//   const textColor = theme === "dark" ? "text-white" : "text-black";
+//   const searchBg = theme === "dark" ? "bg-gray-800" : "bg-white";
+//   const dropdownBg = theme === "dark" ? "bg-gray-700 text-white" : "bg-white text-black";
+//   const hoverBg = theme === "dark" ? "hover:bg-gray-600" : "hover:bg-gray-100";
+
+//   return (
+//     <header className={`${bgHeader} ${textColor} px-6 py-4`}>
+//       <div className="flex justify-between items-center text-center space-x-4">
+//         {/* Left Section */}
+//         <div className={`flex items-center space-x-4 ${searchBg} rounded-lg py-2 px-3`}>
+//           {/* Search Input */}
+//           <div className={`relative w-100 flex items-center justify-between ${searchBg} rounded-lg px-3 py-2`}>
+//             <input
+//               placeholder="Search…"
+//               className={`w-full border-none outline-none ${theme === "dark" ? "bg-gray-800 text-white" : "text-gray-700"}`}
+//             />
+//             <FaSearch className={theme === "dark" ? "text-gray-400" : "text-gray-600"} />
+//           </div>
+//         </div>
+
+//         {/* Right Section */}
+//         <div className="flex items-center space-x-3">
+//           <ThemeToggle />
+//           {/* Notifications Icon with Badge */}
+//           <div className={`relative rounded-full p-3 ${theme === "dark" ? "bg-gray-700" : "bg-blue-500"}`}>
+//             <IoNotificationsSharp className="text-white w-6 h-6" />
+//             <span className="absolute top-0 right-0 w-5 h-5 rounded-full bg-red-600 border-2 border-white text-xs text-white text-center">
+//               2
+//             </span>
+//           </div>
+
+//         </div>
+//       </div>
+//     </header>
+//   );
+// };
+
+// export default Header;
+
+import React from "react";
 import { FaSearch } from "react-icons/fa";
 import { IoNotificationsSharp } from "react-icons/io5";
+import { FiMenu } from "react-icons/fi";
+import ThemeToggle from "./ThemeToggle";
+import { useTheme } from "../components/context/ThemeProvider";
 
-const Header = () => {
-  const [dropdownValue, setDropdownValue] = useState("all");
+const Header = ({ onMenuClick }) => {
+  const { theme } = useTheme();
+  const bgHeader = theme === "dark" ? "bg-[#1e1e1e] border-b border-gray-700" : "bg-[#E3EDF9]";
+  const textColor = theme === "dark" ? "text-white" : "text-black";
+  const searchBg = theme === "dark" ? "bg-gray-800" : "bg-white";
 
   return (
-    <header className="bg-[#E3EDF9] text-black px-6 py-4">
+    <header className={`${bgHeader} ${textColor} px-6 py-4`}>
       <div className="flex justify-between items-center text-center space-x-4">
-        {/* Left Section */}
-        <div className="flex items-center space-x-4 bg-white rounded-lg py-2 px-3"> 
-          {/* Dropdown Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              {/* <button className="bg-[#253D90] text-white font-bold rounded-lg px-4 py-2">
-                {dropdownValue || "Select Status"}
-              </button> */}
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-white rounded-lg shadow-md">
-              <DropdownMenuItem onClick={() => setDropdownValue("all")} className="p-2 text-black hover:bg-gray-100">
-                All Candidates
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDropdownValue("shortlisted")} className="p-2 text-black hover:bg-gray-100">
-                Shortlisted
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDropdownValue("interviewed")} className="p-2 text-black hover:bg-gray-100">
-                Interviewed
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div className="flex items-center space-x-4">
+          {/* Hamburger */}
+          <button className="lg:hidden text-2xl mr-2 cursor-pointer" onClick={onMenuClick}>
+            <FiMenu />
+          </button>
 
-          {/* Search Input */}
-          <div className="relative w-100 flex items-center justify-between bg-white rounded-lg px-3 py-2">
+          {/* Search */}
+          <div className={`items-center ${searchBg} rounded-lg py-2 px-3 hidden sm:flex`}>
             <input
               placeholder="Search…"
-              className="w-full border-none text-gray-700 outline-none "
+              className={`w-full border-none outline-none ${theme === "dark" ? "bg-gray-800 text-white" : "text-gray-700"}`}
             />
-            <FaSearch />
+            <FaSearch className={theme === "dark" ? "text-gray-400" : "text-gray-600"} />
           </div>
         </div>
 
-        {/* Right Section */}
+        {/* Right */}
         <div className="flex items-center space-x-3">
-          {/* Notifications Icon with Badge */}
-          <div className="relative bg-blue-500 rounded-full p-3">
+          <ThemeToggle />
+          <div className={`relative rounded-full p-3 ${theme === "dark" ? "bg-gray-700" : "bg-blue-500"}`}>
             <IoNotificationsSharp className="text-white w-6 h-6" />
-            <span className="absolute top-0 right-0 w-5 h-5 rounded-full bg-red-600 border-2 border-white text-xs text-white text-center">2</span>
+            <span className="absolute top-0 right-0 w-5 h-5 rounded-full bg-red-600 border-2 border-white text-xs text-white text-center">
+              2
+            </span>
           </div>
-          {/* Account Menu */}
-          <AccountMenu />
         </div>
       </div>
     </header>
@@ -165,3 +205,4 @@ const Header = () => {
 };
 
 export default Header;
+

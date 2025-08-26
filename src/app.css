@@ -1,3 +1,23 @@
-button, a {
-  outline: none !important;
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+/* body {
+    font-family: 'Inter', sans-serif;
+} */
+
+:root {
+  --background: #ffffff;
+  --text-color: #000000;
+  --primary: #2563eb; /* Tailwind blue-600 */
+}
+
+[data-theme='dark'] {
+  --background: #1e1e1e; /* Tailwind gray-800 */
+  --text-color: #ffffff; /* Tailwind gray-50 */
+  --primary: #facc15; /* Tailwind yellow-400 */
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-color);
+  transition: background 0.3s, color 0.3s;
+  font-family: 'Inter', sans-serif;
 }

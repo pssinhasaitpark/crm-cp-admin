@@ -18,6 +18,7 @@ import {
 import ProtectedRoute from "./routes/ProtectedRoutes/ProtectedRoute.jsx";
 import Profile from "./pages/profile/Profile.jsx";
 import  { Toaster } from 'react-hot-toast';
+import "./app.css"
 import Projects from "./pages/projects/Projects.jsx";
 import ChannelPartners from "./pages/channelPartners/ChannelPartners.jsx";
 function App() {
