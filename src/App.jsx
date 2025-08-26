@@ -19,6 +19,8 @@ import ProtectedRoute from "./routes/ProtectedRoutes/ProtectedRoute.jsx";
 import Profile from "./pages/profile/Profile.jsx";
 import  { Toaster } from 'react-hot-toast';
 import "./app.css"
+import Projects from "./pages/projects/Projects.jsx";
+import ChannelPartners from "./pages/channelPartners/ChannelPartners.jsx";
 function App() {
   return (
     <>
@@ -38,11 +40,11 @@ function App() {
           <Route path="performance" element={<Performance />} />
           <Route path="payroll" element={<PayrollDashboard />} />
           <Route path="profile" element={<Profile />} />
-                 {/* 🔹 Connect Sidebar Routes */}
+                 {/*  Connect Sidebar Routes */}
           <Route path="dashboard" element={<DashboardCards />} />
-          <Route path="projects" element={<Jobs />} /> {/* Example placeholder */}
-          <Route path="agents" element={<Profile />} />
-          <Route path="cps" element={<Profile />} />
+          <Route path="projects" element={<Projects />} /> {/* Example placeholder */}
+          <Route path="agents" element={<Jobs />} />
+          <Route path="cps" element={<ChannelPartners />} />
           <Route path="leads" element={<Profile />} />
 
           {/* Sales (Team Management) */}
