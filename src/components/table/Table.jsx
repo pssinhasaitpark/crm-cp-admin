@@ -11,12 +11,14 @@ const DataTableComponent = ({
   onAdd = () => {},
   onExport = () => {},
   onDownload = () => {},
+  onSubmit = () => {},
   filterByStatus = false,
   statusOptions = ["All", "Active", "Inactive"],
   addLabel = "Add New",
   showFilter = true,
   formFields = [],
-  formLabel="Add"
+  formLabel="Add",
+  showAddButton = true,
 }) => {
   const { theme } = useTheme(); // ✅ Get theme
   const isDark = theme === "dark";
@@ -78,13 +80,14 @@ const DataTableComponent = ({
             title={formLabel}
             triggerLabel={addLabel}
             fields={formFields}
-            onSubmit={onAdd}
-            // onSubmit={handleAddMember}
+            // onSubmit={onAdd}
+            onSubmit={onSubmit}
             submitLabel="Add"
           />
         }
         showFilter={showFilter}
-        
+        showAddButton={showAddButton}
+
       />
 
       <div >
