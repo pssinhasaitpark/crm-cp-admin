@@ -10,6 +10,7 @@ const FormDialog = ({
   onSubmit = () => {},
   submitLabel = "Submit",
 }) => {
+  
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const [formData, setFormData] = useState({});
