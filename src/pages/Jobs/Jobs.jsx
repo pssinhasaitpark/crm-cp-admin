@@ -141,11 +141,13 @@ import DataTableComponent from "../../components/table/Table";
 import data from '../../utils/Agents'
 import { CheckIcon } from "@radix-ui/react-icons";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { useTheme } from "../../components/context/ThemeProvider";
 
 const agentStatusStyles = {
-  "Active": "bg-green-100 text-green-700",
-  "Inactive": "bg-red-100 text-red-700"
+  Active: "bg-green-100 text-green-700 dark:bg-green-700 dark:text-green-200",
+  Inactive: "bg-red-100 text-red-700 dark:bg-red-700 dark:text-red-200",
 };
+
 
 const columns = [
   {
@@ -173,7 +175,11 @@ const columns = [
     name: "Status",
     selector: row => row.status,
     cell: row => (
-      <span className={`text-xs px-2 py-1 rounded-full font-medium ${agentStatusStyles[row.status] || 'bg-gray-200 text-gray-800'}`}>
+      <span
+        className={`text-xs px-2 py-1 rounded-full font-medium ${
+          agentStatusStyles[row.status] || 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+        }`}
+      >
         {row.status}
       </span>
     ),
@@ -207,17 +213,80 @@ const columns = [
     button: true,
   }
 ];
-const Jobs = () => {
+const   Jobs = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
+  const handleAddMember = (data) => {
+    console.log("New Member:", data);
+    // 🔁 Add logic to update state or send API
+  };
+    const handleAdd = () => console.log("Add New Channel Partner");
+    const handleExport = () => console.log("Export clicked");
+    const handleDownload = () => console.log("Download CSV clicked");
+  
+ const  agentFormFields = [
+    {
+      name: "name",
+      label: "Name",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "email",
+      label: "Email",
+      type: "email",
+      required: true,
+    },
+    {
+      name: "phone",
+      label: "Phone",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "agency",
+      label: "Agency",
+      type: "text",
+      required: false,
+    },
+    {
+      name: "location",
+      label: "Location",
+      type: "text",
+      required: false,
+    },
+    {
+      name: "status",
+      label: "Status",
+      type: "select",
+      options: ["Active", "Inactive", "Pending"], // you can customize this
+      required: true,
+    },
+    {
+      name: "joinedOn",
+      label: "Joined On",
+      type: "date",
+      required: true,
+    },
+  ];
   return (
-    <div className="min-h-auto bg-gray-50 p-6">
+    <div  className={`min-h-auto p-6 ${
+      isDark
+        ? "bg-[#1e1e1e] text-gray-100"
+        : "bg-white text-gray-800"
+    }`}>
       <DataTableComponent
         data={data}
         columns={columns}
         title="Agents Table"
         filterByStatus={true}
-        onAdd={() => ("Add")}
-        onExport={() => ("Export clicked")}
-        onDownload={() => ("Download CSV clicked")}
+        formFields={agentFormFields}
+        formLabel="Add Agent Form"
+        onAdd={handleAdd}
+        onExport={handleExport}
+        onDownload={handleDownload}
+        addLabel="New Agent"
       />
     </div>
   );

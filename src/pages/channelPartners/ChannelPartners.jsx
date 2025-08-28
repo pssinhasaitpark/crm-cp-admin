@@ -257,14 +257,18 @@ import React from "react";
 import data from "../../utils/CPs";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import DataTableComponent from "../../components/table/Table";
+import { useTheme } from "../../components/context/ThemeProvider";
 
 const statusOptions = ["All", "Active", "Inactive"];
 const cpStatusStyles = {
-  Active: "bg-green-100 text-green-700",
-  Inactive: "bg-red-100 text-red-700",
+  Active: "bg-green-100 text-green-700 dark:bg-green-700 dark:text-green-200",
+  Inactive: "bg-red-100 text-red-700 dark:bg-red-700 dark:text-red-200",
 };
 
 const ChannelPartners = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   const columns = [
     {
       name: "Name",
@@ -330,23 +334,159 @@ const ChannelPartners = () => {
     },
   ];
 
+
   // You can define handlers here or pass empty functions if not used yet
   const handleAdd = () => console.log("Add New Channel Partner");
   const handleExport = () => console.log("Export clicked");
   const handleDownload = () => console.log("Download CSV clicked");
+  // const  channelFormFields = [
+  //   {
+  //     name: "name",
+  //     label: "Name",
+  //     type: "text",
+  //     required: true,
+  //   },
+  //   {
+  //     name: "email",
+  //     label: "Email",
+  //     type: "email",
+  //     required: true,
+  //   },
+  //   {
+  //     name: "phone",
+  //     label: "Phone",
+  //     type: "text",
+  //     required: true,
+  //   },
+  //   {
+  //     name: "agency",
+  //     label: "Agency",
+  //     type: "text",
+  //     required: false,
+  //   },
+  //   {
+  //     name: "location",
+  //     label: "Location",
+  //     type: "text",
+  //     required: false,
+  //   },
+  //   {
+  //     name: "status",
+  //     label: "Status",
+  //     type: "select",
+  //     options: ["Active", "Inactive", "Pending"], // you can customize this
+  //     required: true,
+  //   },
+  //   {
+  //     name: "joinedOn",
+  //     label: "Joined On",
+  //     type: "date",
+  //     required: true,
+  //   },
+  // ];
+  
+  
+  const channelFormFields = [
+    {
+      name: "name",
+      label: "Name",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "email",
+      label: "Email",
+      type: "email",
+      required: true,
+    },
+    {
+      name: "password",
+      label: "Password",
+      type: "password",
+      required: true,
+    },
+    {
+      name: "confirm_password",
+      label: "Confirm Password",
+      type: "password",
+      required: true,
+    },
+    {
+      name: "mobile_number",
+      label: "Mobile Number",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "state",
+      label: "State",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "firm_name",
+      label: "Firm Name",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "reraId",
+      label: "RERA ID",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "agent_type",
+      label: "Agent Type",
+      type: "select",
+      options: ["Individual", "Agency", "Franchise"],
+      required: true,
+    },
+    {
+      name: "year_of_experience",
+      label: "Years of Experience",
+      type: "number",
+      required: true,
+    },
+    {
+      name: "referral_code",
+      label: "Referral Code",
+      type: "text",
+      required: false,
+    },
+    {
+      name: "profile_photo",
+      label: "Profile Photo",
+      type: "file",
+      required: false,
+    },
+    {
+      name: "id_proof",
+      label: "ID Proof",
+      type: "file",
+      required: true,
+    },
+  ];
 
+  
   return (
-    <div className="min-h-auto bg-gray-50 p-6">
+    <div className={`min-h-auto p-6 rounded-lg shadow-lg ${
+      isDark
+        ? "bg-[#1e1e1e] text-gray-100 shadow-[0_4px_12px_rgba(255,255,255,0.15)]"
+        : "bg-gray-50 text-gray-800 shadow-[0_4px_12px_rgba(0,0,0,0.1)]"
+    }`}>
       <DataTableComponent
         data={data}
         columns={columns}
         title="Channel Partners Table"
         filterByStatus={true}
         statusOptions={statusOptions}
+        formFields={channelFormFields}
+        formLabel="Add Channel Partner"
         onAdd={handleAdd}
         onExport={handleExport}
         onDownload={handleDownload}
-        addLabel="New Member"
+        addLabel="New CPs"
       />
     </div>
   );

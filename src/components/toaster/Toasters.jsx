@@ -13,6 +13,7 @@ const baseStyle = {
 
 export const showSuccess = (message) => {
   toast.success(message, {
+    duration: 2000,
     position: "top-right",
     style: {
       ...baseStyle,
@@ -27,6 +28,7 @@ export const showSuccess = (message) => {
 
 export const showError = (message) => {
   toast.error(message, {
+    duration: 2000,
     position: "top-right",
     style: {
       ...baseStyle,
