@@ -21,6 +21,7 @@ import  { Toaster } from 'react-hot-toast';
 import "./app.css"
 import Projects from "./pages/projects/Projects.jsx";
 import ChannelPartners from "./pages/channelPartners/ChannelPartners.jsx";
+import BookingList from "./pages/candidate/Candidate.jsx";
 function App() {
   return (
     <>
@@ -48,7 +49,7 @@ function App() {
           <Route path="leads" element={<Profile />} />
 
           {/* Sales (Team Management) */}
-          <Route path="sales/bookings" element={<Candidate />} />
+          <Route path="sales/bookings" element={<BookingList />} />
           <Route path="sales/payments" element={<PayrollDashboard />} />
           <Route path="sales/wallet" element={<Performance />} />
 

@@ -52,14 +52,16 @@ const DashboardPage = () => {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar for Desktop */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block  fixed w-[256px] z-10">
         <Sidebar />
       </div>
 
       {/* Sidebar for Mobile (Offcanvas) */}
       <div
         className={`fixed inset-0 z-50 flex lg:hidden transition-opacity duration-300 ${
-          isSidebarOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          isSidebarOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         }`}
       >
         {/* Backdrop */}
@@ -79,9 +81,17 @@ const DashboardPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      {/* <div className="flex-1 flex flex-col">
         <Header onMenuClick={() => setIsSidebarOpen(true)} />
         <div className="p-4">
+          <Outlet />
+        </div>
+      </div> */}
+      <div className="flex-1 flex flex-col relative">
+        <div className="fixed right-0 z-9 w-full lg:w-[calc(100%-256px)]">
+          <Header onMenuClick={() => setIsSidebarOpen(true)} />
+        </div>
+        <div className="p-4 mt-18 w-full right-0 absolute lg:w-[calc(100%-256px)]">
           <Outlet />
         </div>
       </div>
