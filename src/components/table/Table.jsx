@@ -11,6 +11,7 @@ const DataTableComponent = ({
   onAdd = () => {},
   onExport = () => {},
   onDownload = () => {},
+  onSubmit = () => {},
   filterByStatus = false,
   statusOptions = ["All", "Active", "Inactive"],
   addLabel = "Add New",
@@ -79,8 +80,8 @@ const DataTableComponent = ({
             title={formLabel}
             triggerLabel={addLabel}
             fields={formFields}
-            onSubmit={onAdd}
-            // onSubmit={handleAddMember}
+            // onSubmit={onAdd}
+            onSubmit={onSubmit}
             submitLabel="Add"
           />
         }

@@ -6,7 +6,7 @@ export const fetchChannelPartners = createAsyncThunk(
   "channelPartners/fetch",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/channel-partners`);
+      const response = await api.get(`/channel-partner`);
       return response.data; 
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -19,11 +19,7 @@ export const createChannelPartner = createAsyncThunk(
   "channelPartners/create",
   async (cpData, { rejectWithValue }) => {
     try {
-      const response = await api.post("/channel-partners/admin/create", cpData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await api.post("/channel-partner/admin/create", cpData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -35,6 +31,13 @@ const initialState = {
   cpList: [],
   isLoading: false,
   error: null,
+  successMessage: null,
+  pagination: {
+      totalItems: 0,
+      totalPages: 0,
+      currentPage: 0,
+    //   limit: 10, // Default page size
+    },
 };
 
 const channelPartnersSlice = createSlice({
@@ -54,7 +57,13 @@ const channelPartnersSlice = createSlice({
       })
       .addCase(fetchChannelPartners.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.cpList = action.payload;
+        state.cpList = action.payload.results;
+        state.pagination = {
+          totalItems: action.payload.totalItems || 0,
+          totalPages: action.payload.totalPages || 0,
+          currentPage: action.payload.currentPage || 0,
+        //   limit: action.payload.limit || 10,
+        };
       })
       .addCase(fetchChannelPartners.rejected, (state, action) => {
         state.isLoading = false;
@@ -65,10 +74,15 @@ const channelPartnersSlice = createSlice({
     builder
       .addCase(createChannelPartner.pending, (state) => {
         state.isLoading = true;
+        state.successMessage = null;
+        state.error = null;
+
       })
       .addCase(createChannelPartner.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.cpList.push(action.payload);
+        // state.cpList.push(action.payload);
+        state.successMessage =
+          action.payload?.message || "Channel Partner added successfully.";
       })
       .addCase(createChannelPartner.rejected, (state, action) => {
         state.isLoading = false;
