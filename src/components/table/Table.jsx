@@ -16,7 +16,8 @@ const DataTableComponent = ({
   addLabel = "Add New",
   showFilter = true,
   formFields = [],
-  formLabel="Add"
+  formLabel="Add",
+  showAddButton = true,
 }) => {
   const { theme } = useTheme(); // ✅ Get theme
   const isDark = theme === "dark";
@@ -84,7 +85,7 @@ const DataTableComponent = ({
           />
         }
         showFilter={showFilter}
-        
+        showAddButton={showAddButton}
       />
 
       <div >
@@ -94,10 +95,11 @@ const DataTableComponent = ({
           data={filteredData}
           customStyles={customStyles}
           pagination
+          // paginationComponent={MyCustomPagination}
           highlightOnHover
           responsive
           selectableRows
-          onSelectedRowsChange={(selected) => console.log(selected)}
+          onSelectedRowsChange={(selected) => (selected)}
           dense
           theme={isDark ? "dark" : "light"}
         />
@@ -107,3 +109,19 @@ const DataTableComponent = ({
 };
 
 export default DataTableComponent;
+
+const MyCustomPagination = ({ paginationProps }) => {
+  // You get access to props like currentPage, totalRows, rowsPerPage, onChangePage, etc.
+  // You can build your own UI here and call the callbacks accordingly
+  return (
+    <div>
+      <button onClick={() => paginationProps.onChangePage(paginationProps - 1)}>
+        Prev
+      </button>
+      <span>{paginationProps}</span>
+      <button onClick={() => paginationProps.onChangePage(paginationProps + 1)}>
+        Next
+      </button>
+    </div>
+  );
+};

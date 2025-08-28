@@ -12,6 +12,7 @@ const TableHeaderActions = ({
   addDialogTrigger = null,
   showFilter = true,
   addLabel = "Add New",
+  showAddButton = true,
 }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -76,18 +77,8 @@ const TableHeaderActions = ({
           <DownloadIcon className="w-4 h-4" />
           Download CSV
         </button>
-        {/* <button
-          type="button"
-          aria-label={addLabel}
-          onClick={onAdd}
-          className="inline-flex items-center gap-1 px-4 py-2 text-sm text-white bg-green-500 rounded hover:bg-green-600 cursor-pointer"
-          title={addLabel}
-        >
-          <PlusIcon className="w-4 h-4" />
-          {addLabel}
-        </button> */}
-        {/* 👇 Custom Dialog trigger here */}
-        {addDialogTrigger}
+        {/* {addDialogTrigger} */}
+        {showAddButton && addDialogTrigger}
       </div>
     </div>
   );

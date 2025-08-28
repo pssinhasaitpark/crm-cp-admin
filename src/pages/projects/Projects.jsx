@@ -37,8 +37,8 @@ const columns = [
       </div>
     ),
     ignoreRowClick: true,
-    allowOverflow: true,
-    button: true,
+    $allowOverflow: true,
+    $button: true,
   },
   {
     name: "Brochure",
@@ -53,8 +53,8 @@ const columns = [
       </a>
     ),
     ignoreRowClick: true,
-    allowOverflow: true,
-    button: true,
+    $allowOverflow: true,
+    $button: true,
   },
   {
     name: "Action",
@@ -77,8 +77,8 @@ const columns = [
       </div>
     ),
     ignoreRowClick: true,
-    allowOverflow: true,
-    button: true,
+    $allowOverflow: true,
+    $button: true,
   },
 ];
 
@@ -136,7 +136,7 @@ const Projects = () => {
       },
     ];
   return (
-    <div className={`min-h-auto p-2 lg:p-6 ${isDark ? "bg-[#1e1e1e] text-gray-100 " : "bg-white text-gray-800"}`}>
+    <div className={`min-h-auto py-6 ${isDark ? "bg-[#1e1e1e] text-gray-100 " : "bg-white text-gray-800"}`}>
       <DataTableComponent
         data={data}
         columns={columns}
