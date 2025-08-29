@@ -4,11 +4,20 @@ import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons
 import React from 'react';
 
 const statusColors = {
-    "New": "bg-blue-400 text-white",
-    "Contacted": "bg-yellow-400 text-black",
-    "Follow Up": "bg-purple-400 text-white",
-    "Rejected": "bg-red-400 text-white"
-  };
+  "new": "bg-blue-400 text-white",
+  "contacted": "bg-yellow-400 text-black",
+  "interested": "bg-green-500 text-white",
+  "not interested": "bg-gray-400 text-white",
+  "follow-Up": "bg-purple-400 text-white",
+  "site visit scheduled": "bg-indigo-400 text-white",
+  "site visit done": "bg-indigo-600 text-white",
+  "converted": "bg-green-700 text-white",
+  "lost": "bg-red-500 text-white",
+  "on hold": "bg-orange-400 text-white",
+  "duplicate": "bg-pink-400 text-white",
+  "dead lead": "bg-red-700 text-white"
+};
+
   
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 // const StatusDropdown = ({ value, onChange, options = [] }) => {
@@ -65,11 +74,12 @@ const cn = (...classes) => classes.filter(Boolean).join(' ');
 // };
 // Radix UI dropdown for Status column
 const StatusDropdown = ({ value, onChange, options = [], isDark }) => {
+
     return (
       <Select.Root value={value} onValueChange={onChange}>
         <Select.Trigger
           className={cn(
-            "inline-flex items-center justify-between gap-2 rounded px-2 py-1 text-xs border shadow-sm w-[120px]",
+            "inline-flex items-center justify-between gap-2 rounded px-2 py-1 text-xs border shadow-sm w-[120px] capitalize",
             "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
             isDark
               ? "border-gray-600"
@@ -103,11 +113,16 @@ const StatusDropdown = ({ value, onChange, options = [], isDark }) => {
                 <Select.Item
                   key={status}
                   value={status}
+                  // className={cn(
+                  //   "text-sm px-2 py-1 rounded-md cursor-pointer flex items-center justify-between my-1 capitalize",
+                  //   "data-[highlighted]:bg-blue-500 data-[highlighted]:text-white",
+                  //   "data-[state=checked]:font-semibold",
+                  //   // Use darker bg with white text on selected items inside dropdown
+                  //   statusColors[status] || ""
+                  // )}
                   className={cn(
-                    "text-sm px-2 py-1 rounded-md cursor-pointer flex items-center justify-between my-1",
-                    "data-[highlighted]:bg-blue-500 data-[highlighted]:text-white",
+                    "text-sm px-2 py-1 rounded-md cursor-pointer flex items-center justify-between my-1 capitalize font-medium",
                     "data-[state=checked]:font-semibold",
-                    // Use darker bg with white text on selected items inside dropdown
                     statusColors[status] || ""
                   )}
                 >
