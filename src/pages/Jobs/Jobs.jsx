@@ -135,19 +135,89 @@
 // export default Jobs;
 
 
-import React from "react";
+import React, { useEffect } from "react";
 import DataTableComponent from "../../components/table/Table";
 // import data from '../../utils/Projects'
 import data from '../../utils/Agents'
 import { CheckIcon } from "@radix-ui/react-icons";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { useTheme } from "../../components/context/ThemeProvider";
+import { useDispatch, useSelector } from "react-redux";
+import { showError, showSuccess } from "../../components/toaster/Toasters";
+import { createAgent, fetchAgents } from "../../redux/slices/agentSlice";
 
 const agentStatusStyles = {
-  Active: "bg-green-100 text-green-700 dark:bg-green-700 dark:text-green-200",
-  Inactive: "bg-red-100 text-red-700 dark:bg-red-700 dark:text-red-200",
+  active: "bg-green-100 text-green-700 dark:bg-green-700 dark:text-green-200 capitalize",
+  inactive: "bg-red-100 text-red-700 dark:bg-red-700 dark:text-red-200 capitalize",
 };
-
+// const columns = [
+//   {
+//     name: "Name",
+//     selector: row => row.name,
+//     sortable: true,
+//   },
+//   {
+//     name: "Email",
+//     selector: row => row.email,
+//   },
+//   {
+//     name: "Phone",
+//     selector: row => row.phone,
+//   },
+//   {
+//     name: "Agency",
+//     selector: row => row.agency,
+//   },
+//   {
+//     name: "Location",
+//     selector: row => row.location,
+//   },
+//   {
+//     name: "Leads",
+//     selector: row => row.leads,
+//   },
+//   {
+//     name: "Status",
+//     selector: row => row.status,
+//     cell: row => (
+//       <span
+//         className={`text-xs px-2 py-1 rounded-full font-medium ${
+//           agentStatusStyles[row.status] || 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+//         }`}
+//       >
+//         {row.status}
+//       </span>
+//     ),
+//   },
+//   {
+//     name: "Joined On",
+//     selector: row => row.joinedOn,
+//   },
+//   {
+//     name: "Action",
+//     cell: row => (
+//       <div className="flex gap-2">
+//         <button
+//           title="Edit"
+//           onClick={() => console.log("Edit", row)}
+//           className="text-blue-500 hover:text-blue-700"
+//         >
+//           <FiEdit />
+//         </button>
+//         <button
+//           title="Delete"
+//           onClick={() => console.log("Delete", row)}
+//           className="text-red-500 hover:text-red-700"
+//         >
+//           <FiTrash2 />
+//         </button>
+//       </div>
+//     ),
+//     ignoreRowClick: true,
+//     $allowOverflow: true,
+//     $button: true,
+//   }
+// ];
 
 const columns = [
   {
@@ -161,19 +231,19 @@ const columns = [
   },
   {
     name: "Phone",
-    selector: row => row.phone,
+    selector: row => row.mobile_number,
   },
   {
     name: "Agency",
-    selector: row => row.agency,
+    selector: row => row.firm_name,
   },
   {
     name: "Location",
-    selector: row => row.location,
+    selector: row => row.state,
   },
   {
     name: "Leads",
-    selector: row => row.leads,
+    selector: row => row.leads_count || 0,
   },
   {
     name: "Status",
@@ -181,7 +251,7 @@ const columns = [
     cell: row => (
       <span
         className={`text-xs px-2 py-1 rounded-full font-medium ${
-          agentStatusStyles[row.status] || 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+          agentStatusStyles[row.status?.toLowerCase()] || 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
         }`}
       >
         {row.status}
@@ -190,7 +260,7 @@ const columns = [
   },
   {
     name: "Joined On",
-    selector: row => row.joinedOn,
+    selector: row => new Date(row.createdAt).toLocaleDateString(),
   },
   {
     name: "Action",
@@ -217,9 +287,18 @@ const columns = [
     $button: true,
   }
 ];
+
+
 const   Jobs = () => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const dispatch = useDispatch();
+  const { agentList, isLoading, error } = useSelector((state) => state.agents);
+
+useEffect(() => {
+  dispatch(fetchAgents());
+}, [dispatch]);
+// console.log("agentList List:", agentList);
 
   const handleAddMember = (data) => {
     console.log("New Member:", data);
@@ -228,60 +307,53 @@ const   Jobs = () => {
     const handleAdd = () => console.log("Add New Channel Partner");
     const handleExport = () => console.log("Export clicked");
     const handleDownload = () => console.log("Download CSV clicked");
+    const handleSubmit = async (values, { resetForm }) => {
+      try {
+        const formData = new FormData();
+        for (const key in values) {
+          formData.append(key, values[key]);
+        }
+  
+        const result = await dispatch(createAgent(formData)).unwrap();
+        // ✅ Success toast
+        showSuccess(result.message || "Channel Partner added successfully");
+        resetForm();
+        dispatch(fetchAgents());
+        return true; // ✅ Indicate success
+      } catch (error) {
+        console.error("Error adding channel partner:", error);
+  
+        // ✅ Error toast
+        showError(error.message || "Failed to add Channel Partner");
+  
+        return false; // ✅ Indicate failure
+      }
+    };
   
  const  agentFormFields = [
-    {
-      name: "name",
-      label: "Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "email",
-      label: "Email",
-      type: "email",
-      required: true,
-    },
-    {
-      name: "phone",
-      label: "Phone",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "agency",
-      label: "Agency",
-      type: "text",
-      required: false,
-    },
-    {
-      name: "location",
-      label: "Location",
-      type: "text",
-      required: false,
-    },
-    {
-      name: "status",
-      label: "Status",
-      type: "select",
-      options: ["Active", "Inactive", "Pending"], // you can customize this
-      required: true,
-    },
-    {
-      name: "joinedOn",
-      label: "Joined On",
-      type: "date",
-      required: true,
-    },
-  ];
+  { name: "name", label: "Name", type: "text", required: true },
+  { name: "email", label: "Email", type: "email", required: true },
+  { name: "password", label: "Password", type: "password", required: true },
+  { name: "confirm_password", label: "Confirm Password", type: "password", required: true },
+  { name: "mobile_number", label: "Mobile Number", type: "mobile_number", required: true }, // ✅ FIXED
+  { name: "state", label: "State", type: "text", required: true },
+  { name: "firm_name", label: "Firm Name", type: "text", required: true },
+  { name: "reraId", label: "RERA ID", type: "text", required: true },
+  { name: "year_of_experience", label: "Years of Experience", type: "number", required: true },
+  { name: "referral_code", label: "Referral Code", type: "text", required: false },
+  { name: "profile_photo", label: "Profile Photo", type: "file", required: true },
+  { name: "id_proof", label: "ID Proof", type: "file", required: true },
+];
   return (
     <div  className={`min-h-auto py-6 ${
       isDark
         ? "bg-[#1e1e1e] text-gray-100"
         : "bg-white text-gray-800"
     }`}>
+    {error && <p className="text-center text-red-500">{error.message || "Failed to fetch data"}</p>}
+    { !error && (
       <DataTableComponent
-        data={data}
+        data={agentList}
         columns={columns}
         title="Agents Table"
         filterByStatus={true}
@@ -291,7 +363,9 @@ const   Jobs = () => {
         onExport={handleExport}
         onDownload={handleDownload}
         addLabel="New Agent"
+        onSubmit={handleSubmit}
       />
+    )}
     </div>
   );
 };

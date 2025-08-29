@@ -1,19 +1,45 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import DataTableComponent from '../../components/table/Table'
 import data from '../../utils/Leads'
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useTheme } from "../../components/context/ThemeProvider";
 import StatusDropdown from '../../components/UI/Dropdown';
-const statusOptions = ["All", "New", "Contacted","Follow Up","Rejected"];
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLeads, createLead } from '../../redux/slices/leadsSlice';
+import { showError, showSuccess } from '../../components/toaster/Toasters';
+import dayjs from "dayjs";
+
+const statusOptions = ["All", "New", "Contacted","Follow Up","Rejected",];
 const leadStatusStyles = {
-  "New": "bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-200",
-  "Contacted": "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200",
-  "Follow Up": "bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-200",
-  "Rejected": "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200"
+  "new": "bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-200",
+  "contacted": "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200",
+  "follow Up": "bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-200",
+  "rejected": "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200"
 };
 const Profile = () => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const dispatch = useDispatch();
+const { leadList, isLoading, error } = useSelector((state) => state.leads);
+
+useEffect(() => {
+  dispatch(fetchLeads());
+}, [dispatch]);
+const statusOptions = [
+  "new",
+  "contacted",
+  "interested",
+  "not interested",
+  "follow-Up",
+  "site visit scheduled",
+  "site visit done",
+  "converted",
+  "lost",
+  "on hold",
+  "duplicate",
+  "dead lead"
+];
+
   const columns = [
     {
       name: "Name",
@@ -26,11 +52,11 @@ const Profile = () => {
     },
     {
       name: "Phone",
-      selector: row => row.phone,
+      selector: row => row.phone_number,
     },
     {
       name: "Interested In",
-      selector: row => row.interestedIn,
+      selector: row => row.interested_in,
     },  
     {
       name: "Source",
@@ -40,32 +66,10 @@ const Profile = () => {
       name: "Date",
       selector: row => row.date,
     },
-    // {
-    //   name: "Status",
-    //   selector: row => row.status,
-    //   cell: (row) => (
-    //     <select
-    //       value={row.status}
-    //       onChange={(e) => {
-    //         const newStatus = e.target.value;
-    //         console.log("Status changed for:", row.name, "=>", newStatus);
-    //         // TODO: API call here to update backend
-    //         // updateStatus(row.id, newStatus); 👈 (future)
-    //       }}
-    //       className={`text-xs px-2 py-1 rounded font-medium border focus:outline-none ${
-    //         isDark
-    //           ? "bg-gray-800 text-white border-gray-600"
-    //           : "bg-white text-black border-gray-300"
-    //       }`}
-    //     >
-    //       {statusOptions.map((status) => (
-    //         <option key={status} value={status} className=''>
-    //           {status}
-    //         </option>
-    //       ))}
-    //     </select>
-    //   ),
-    // },
+    {
+      name: "Created By",
+      selector: row => row.created_by || "Admin",
+    },
     {
       name: "Status",
       selector: row => row.status,
@@ -76,7 +80,7 @@ const Profile = () => {
             console.log("Changed:", row.name, "=>", newStatus);
             // TODO: API update
           }}
-          options={["New", "Contacted", "Follow Up", "Rejected"]}
+          options={statusOptions}
           isDark={isDark}
         />
       ),
@@ -113,7 +117,23 @@ const Profile = () => {
     const handleAdd = () => console.log("Add New Channel Partner");
     const handleExport = () => console.log("Export clicked");
     const handleDownload = () => console.log("Download CSV clicked");
-  
+    const handleSubmit = async (values, { resetForm }) => {
+      try {
+        const payload = {
+          ...values,
+          date: dayjs(values.date).format("DD/MM/YYYY"), // ✅ formatted date
+        };
+        const response = await dispatch(createLead(payload)).unwrap();
+        showSuccess(response.message || "Lead created successfully");
+        dispatch(fetchLeads()); // refresh table
+        resetForm();
+        return true;
+      } catch (err) {
+        showError(err.message || "Failed to create lead");
+        return false;
+      }
+    };
+    
   const leadFormFields = [
     {
       name: "name",
@@ -128,22 +148,15 @@ const Profile = () => {
       required: true,
     },
     {
-      name: "phone",
+      name: "phone_number",
       label: "Phone",
-      type: "text",
+      type: "mobile_number",
       required: true,
     },
     {
-      name: "interested",
+      name: "interested_in",
       label: "Interested In",
       type: "text",
-      required: true,
-    },
-    {
-      name: "status",
-      label: "Status",
-      type: "select",
-      options: ["New", "Contacted", "Converted", "Lost"], // You can customize these
       required: true,
     },
     {
@@ -163,7 +176,7 @@ const Profile = () => {
   return (
     <div className={`min-h-auto py-6 ${isDark ? "bg-[#1e1e1e] text-gray-100 " : "bg-white text-gray-800"}`}>
       <DataTableComponent
-        data={data}
+        data={ leadList }
         columns={columns}
         title='Leads Table'
         filterByStatus={true}
@@ -174,6 +187,7 @@ const Profile = () => {
         onExport={handleExport}
         onDownload={handleDownload}
         addLabel="Add Lead"
+        onSubmit={handleSubmit}
       />
     </div>
   )
