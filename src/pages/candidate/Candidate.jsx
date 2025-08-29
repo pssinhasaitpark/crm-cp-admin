@@ -72,7 +72,7 @@
 //       </div>
 //     ),
 //     ignoreRowClick: true,
-//     allowOverflow: true,
+//     $allowOverflow: true,
 //     button: true,
 //   }
 // ];
@@ -260,8 +260,8 @@ const columns = [
       </div>
     ),
     ignoreRowClick: true,
-    allowOverflow: true,
-    button: true,
+    $allowOverflow: true,
+    $button: true,
   }
 ];
 
@@ -325,7 +325,7 @@ const BookingList = () => {
   ];
 
   return (
-    <div className={`min-h-auto p-6 rounded-lg shadow-lg ${isDark ? "bg-[#1e1e1e] text-gray-100 " : "bg-white text-gray-800"}`}>
+    <div className={`min-h-auto py-6 rounded-lg shadow-lg ${isDark ? "bg-[#1e1e1e] text-gray-100 " : "bg-white text-gray-800"}`}>
       <DataTableComponent
         data={data} // Replace with your actual bookings data
         columns={columns}
@@ -336,6 +336,7 @@ const BookingList = () => {
         onExport={handleExport}
         onDownload={handleDownload}
         addLabel="Add Booking"
+        showAddButton={false} 
       />
     </div>
   );

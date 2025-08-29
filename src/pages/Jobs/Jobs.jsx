@@ -172,6 +172,10 @@ const columns = [
     selector: row => row.location,
   },
   {
+    name: "Leads",
+    selector: row => row.leads,
+  },
+  {
     name: "Status",
     selector: row => row.status,
     cell: row => (
@@ -209,8 +213,8 @@ const columns = [
       </div>
     ),
     ignoreRowClick: true,
-    allowOverflow: true,
-    button: true,
+    $allowOverflow: true,
+    $button: true,
   }
 ];
 const   Jobs = () => {
@@ -271,7 +275,7 @@ const   Jobs = () => {
     },
   ];
   return (
-    <div  className={`min-h-auto p-6 ${
+    <div  className={`min-h-auto py-6 ${
       isDark
         ? "bg-[#1e1e1e] text-gray-100"
         : "bg-white text-gray-800"

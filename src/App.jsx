@@ -5,7 +5,7 @@ import DashboardCards from "./components/DashboardsLayouts/DashboardCards";
 import {
   SignUp,
   Login,
-  PayrollDashboard,
+  // PayrollDashboard,
   Performance,
   Messages,
   Candidate,
@@ -22,6 +22,7 @@ import "./app.css"
 import Projects from "./pages/projects/Projects.jsx";
 import ChannelPartners from "./pages/channelPartners/ChannelPartners.jsx";
 import BookingList from "./pages/candidate/Candidate.jsx";
+import PaymentAndInvoice from "./pages/paymentInvoice/PaymentAndInvoice.jsx";
 function App() {
   return (
     <>
@@ -39,7 +40,7 @@ function App() {
           <Route path="candidates" element={<Candidate />} />
           <Route path="messages" element={<Messages />} />
           <Route path="performance" element={<Performance />} />
-          <Route path="payroll" element={<PayrollDashboard />} />
+          {/* <Route path="payroll" element={<PayrollDashboard />} /> */}
           <Route path="profile" element={<Profile />} />
                  {/*  Connect Sidebar Routes */}
           <Route path="dashboard" element={<DashboardCards />} />
@@ -50,7 +51,7 @@ function App() {
 
           {/* Sales (Team Management) */}
           <Route path="sales/bookings" element={<BookingList />} />
-          <Route path="sales/payments" element={<PayrollDashboard />} />
+          <Route path="sales/payments" element={<PaymentAndInvoice />} />
           <Route path="sales/wallet" element={<Performance />} />
 
           {/* Reports */}

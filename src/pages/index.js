@@ -1,5 +1,5 @@
 export { default as Resume } from "../pages/resume/Resume";
-export { default as PayrollDashboard } from "../pages/payrolldashboard/PayrollDashboard";
+// export { default as PayrollDashboard } from "../pages/payrolldashboard/PayrollDashboard";
 export { default as Performance } from "../pages/performance/Performance";
 export { default as Jobs } from "../pages/Jobs/Jobs";
 export { default as Messages } from "../pages/messages/Messages";
