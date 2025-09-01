@@ -16,9 +16,11 @@ export default function AssignLeadDialog({
   const { theme } = useTheme(); // "light" | "dark"
 
   const handleAssign = () => {
+    console.log("asdas")
     if (selectedAgent) {
-      onAssign(lead._id, selectedAgent);
-      onOpenChange(false); // close modal after assign
+      // onAssign(lead._id, selectedAgent);
+      // onOpenChange(false); // close modal after assign
+      onClose();
     }
   };
 

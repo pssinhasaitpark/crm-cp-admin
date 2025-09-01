@@ -142,14 +142,14 @@ const Leads = () => {
           {row.assigned_to ? (
             <button
               onClick={() => handleOpen(row)}
-              className="px-2 py-1 text-sm font-medium"
+              className="px-2 py-1 text-sm font-medium cursor-pointer"
             >
               {row.name || "Assigned"}
             </button>
           ) : (
             <button
               onClick={() => handleOpen(row)}
-              className="px-3 py-1 rounded-lg bg-blue-500 text-white hover:bg-blue-600 text-sm"
+              className="px-3 py-1 rounded-lg bg-blue-500 text-white hover:bg-blue-600 text-sm cursor-pointer"
             >
               Assign
             </button>
