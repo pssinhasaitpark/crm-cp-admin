@@ -214,7 +214,7 @@ const StatusDropdown = ({ value, onChange, options = [], isDark }) => {
                 className={cn(
                   "text-sm px-2 py-1 rounded-md cursor-pointer flex items-center justify-between my-1 capitalize font-medium",
                   "data-[state=checked]:font-semibold",
-                  statusColors[status.label.toLowerCase()] || ""
+                  statusColors[status?.label?.toLowerCase()] || ""
                 )}
               >
                 <Select.ItemText>{status.label}</Select.ItemText>
