@@ -45,7 +45,7 @@ import { useTheme } from "../../components/context/ThemeProvider"; // Custom hoo
 import ChannelPartners from "../../pages/channelPartners/ChannelPartners";
 import Projects from "../../pages/projects/Projects";
 import { Jobs } from "../../pages";
-import Profile from "../../pages/profile/Profile";
+import Profile from "../../pages/profile/Leads";
 
 const stats = [
   {
