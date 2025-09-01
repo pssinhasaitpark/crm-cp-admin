@@ -7,9 +7,9 @@ export const fetchChannelPartners = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get(`/channel-partner`);
-      return response.data; 
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -22,22 +22,35 @@ export const createChannelPartner = createAsyncThunk(
       const response = await api.post("/channel-partner/admin/create", cpData);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
 
+export const updateChannelPartnerStatus = createAsyncThunk(
+  "channelPartners/updateStatus",
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const response = await api.patch(`/admin/${id}`, {
+        status,
+      });
+      return { id, status, message: response.data?.message };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
 const initialState = {
   cpList: [],
   isLoading: false,
   error: null,
   successMessage: null,
   pagination: {
-      totalItems: 0,
-      totalPages: 0,
-      currentPage: 0,
+    totalItems: 0,
+    totalPages: 0,
+    currentPage: 0,
     //   limit: 10, // Default page size
-    },
+  },
 };
 
 const channelPartnersSlice = createSlice({
@@ -47,6 +60,7 @@ const channelPartnersSlice = createSlice({
     resetState: (state) => {
       state.isLoading = false;
       state.error = null;
+      state.successMessage = null;
     },
   },
   extraReducers: (builder) => {
@@ -62,7 +76,7 @@ const channelPartnersSlice = createSlice({
           totalItems: action.payload.totalItems || 0,
           totalPages: action.payload.totalPages || 0,
           currentPage: action.payload.currentPage || 0,
-        //   limit: action.payload.limit || 10,
+          //   limit: action.payload.limit || 10,
         };
       })
       .addCase(fetchChannelPartners.rejected, (state, action) => {
@@ -76,7 +90,6 @@ const channelPartnersSlice = createSlice({
         state.isLoading = true;
         state.successMessage = null;
         state.error = null;
-
       })
       .addCase(createChannelPartner.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -87,6 +100,29 @@ const channelPartnersSlice = createSlice({
       .addCase(createChannelPartner.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      });
+    // Update Status
+    builder
+      .addCase(updateChannelPartnerStatus.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.successMessage = null;
+      })
+      .addCase(updateChannelPartnerStatus.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const { id, status, message } = action.payload;
+
+        // Update status locally in cpList
+        const index = state.cpList.findIndex((cp) => cp.id === id);
+        if (index !== -1) {
+          state.cpList[index].status = status;
+        }
+
+        state.successMessage = message || "Status updated successfully.";
+      })
+      .addCase(updateChannelPartnerStatus.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || "Failed to update status.";
       });
   },
 });
