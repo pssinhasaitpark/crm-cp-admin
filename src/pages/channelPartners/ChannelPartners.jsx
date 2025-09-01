@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // import React, { useEffect } from "react";
 // import data from "../../utils/CPs";
 // import { FiEdit, FiTrash2 } from "react-icons/fi";
