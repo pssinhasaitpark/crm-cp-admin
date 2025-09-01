@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import DataTableComponent from '../../components/table/Table'
 import data from '../../utils/Leads'
-import { FiEdit, FiTrash2 } from 'react-icons/fi';
+import { FiEdit, FiTrash2 ,FiEye } from 'react-icons/fi';
 import { useTheme } from "../../components/context/ThemeProvider";
 import StatusDropdown from '../../components/UI/Dropdown';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 import { useDebounce } from '../../hooks/useDebounce';
 import AssignLeadDialog from '../../components/dialogbox/AssignedDialogbox';
 import { fetchAgents } from "../../redux/slices/agentSlice";
+import ViewModal from '../../components/viewModal/ViewModal';
 
 const statusOptions = ["All", "New", "Contacted", "Follow Up", "Rejected",];
 const leadStatusStyles = {
@@ -20,6 +21,7 @@ const leadStatusStyles = {
   "rejected": "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200"
 };
 const Leads = () => {
+  const [isViewModalOpen, setViewModalOpen] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const dispatch = useDispatch();
@@ -85,6 +87,33 @@ const Leads = () => {
     "duplicate",
     "dead lead"
   ];
+// console.log("agentList List:", agentList);
+  const handleView = (row) => {
+    setSelectedLead(row);
+    setViewModalOpen(true);
+  };
+
+  // Optional: Custom labels for better UI
+  const fieldLabels = {
+    mobile_number: "Phone",
+    firm_name: "Company",
+    reraId: "RERA ID",
+    year_of_experience: "Experience (Years)",
+    profile_photo: "Profile Photo",
+    id_proof: "ID Proof",
+    referral_code: "Referral Code",
+    status: "Status",
+    createdAt: "Joined On",
+    leadsCount: "Leads",
+    state: "Location",
+  };
+
+  // Optional: Formatters for specific fields
+  const fieldFormatters = {
+    year_of_experience: (val) => `${val} years`,
+    createdAt: (val) => dayjs(val).format("DD-MM-YYYY"),
+    status: (val) => val.charAt(0).toUpperCase() + val.slice(1), // capitalize
+  };
 
   const columns = [
     {
@@ -162,6 +191,13 @@ const Leads = () => {
       name: "Action",
       cell: row => (
         <div className="flex gap-2">
+            <button
+                      title="View"
+                      onClick={() => handleView(row)}
+                      className="text-green-600 hover:text-green-800 cursor-pointer"
+                    >
+                      <FiEye />
+                    </button>
           <button
             title="Edit"
             onClick={() => console.log("Edit", row)}
@@ -269,6 +305,15 @@ const Leads = () => {
         selectedAgent={selectedAgent}
         onChange={setSelectedAgent}
         onSubmit={handleAssign}
+      />
+      {/* -----Model For View Details------ */}
+      <ViewModal
+        isOpen={isViewModalOpen}
+        onClose={() => setViewModalOpen(false)}
+        title="Channel Partner Details"
+        data={selectedLead}
+        fieldLabels={fieldLabels}
+        fieldFormatters={fieldFormatters}
       />
     </div>
   )

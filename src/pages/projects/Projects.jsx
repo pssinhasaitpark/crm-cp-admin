@@ -15,7 +15,7 @@ const columns = [
   {
     name: "Description",
     selector: row => row.description,
-    grow: 2,
+    grow: 3,
   },
   {
     name: "Location",
@@ -101,12 +101,7 @@ const Projects = () => {
         type: "text",
         required: true,
       },
-      {
-        name: "description",
-        label: "Description",
-        type: "textarea",  // We will add support for textarea in form dialog
-        required: true,
-      },
+    
       {
         name: "location",
         label: "Location",
@@ -115,24 +110,37 @@ const Projects = () => {
       },
       {
         name: "priceRange",
-        label: "Price Range",
+        label: "Min Price Range",
         type: "text",
         required: false,
         placeholder: "e.g. $100k - $500k",
       },
       {
-        name: "image",
-        label: "Image URL",
+        name: "priceRange",
+        label: "Max Price Range",
         type: "text",
-        required: false,
-        placeholder: "Enter image URL",
+        required: true,
+        placeholder: "e.g. $100k - $500k",
+      },
+      {
+        name: "image",
+        label: "Image file",
+        type: "file",
+        required: true,
+        placeholder: "Enter image ",
       },
       {
         name: "brochure",
-        label: "Brochure URL",
-        type: "text",
+        label: "Brochure",
+        type: "file",
+        required: true,
+        placeholder: "Enter brochure pdf",
+      },
+      {
+        name: "description",
+        label: "Description (Optional)",
+        type: "textarea",  // We will add support for textarea in form dialog
         required: false,
-        placeholder: "Enter brochure URL",
       },
     ];
   return (

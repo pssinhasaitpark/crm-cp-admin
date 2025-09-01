@@ -738,6 +738,7 @@ const FormDialog = ({
         return (
           <input
             type={field.type}
+            placeholder={field.placeholder}
             name={field.name}
             value={formik.values[field.name]}
             onChange={formik.handleChange}

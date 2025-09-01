@@ -45,43 +45,100 @@ import { useTheme } from "../../components/context/ThemeProvider"; // Custom hoo
 import ChannelPartners from "../../pages/channelPartners/ChannelPartners";
 import Projects from "../../pages/projects/Projects";
 import { Jobs } from "../../pages";
-import Profile from "../../pages/profile/Leads";
+import Profile from "../../pages/profile/Profile";
+import { fetchChannelPartners } from "../../redux/slices/channelPartnersSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchLeads } from "../../redux/slices/leadsSlice";
+import { fetchAgents } from "../../redux/slices/agentSlice";
+import { useMemo } from "react";
 
-const stats = [
-  {
-    id: 1,
-    title: "Channel Partners",
-    count: 236,
-    icon: <FiUsers size={24} />,
-    route: "/cps",
-  },
-  {
-    id: 2,
-    title: "Agents",
-    count: 87,
-    icon: <FiUsers size={24} />,
-    route: "/agents",
-  },
-  {
-    id: 3,
-    title: "Leads",
-    count: 198,
-    icon: <FiClipboard size={24} />,
-    route: "/leads",
-  },
-  {
-    id: 4,
-    title: "Bookings",
-    count: 74,
-    icon: <FiUserCheck size={24} />,
-    route: "/sales/bookings",
-  },
-];
+
 const components = [Projects, Jobs, ChannelPartners, Profile];
 const StatsCards = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const dispatch = useDispatch();
+ 
+  // Correct Redux state access
+  const { pagination: cpPagination } = useSelector((state) => state.channelPartners);
+  const { pagination: leadPagination } = useSelector((state) => state.leads);
+  const { pagination: agentPagination } = useSelector((state) => state.agents);
 
+  const cpCount = cpPagination?.totalItems || 0;
+  const leadCount = leadPagination?.totalItems || 0;
+  const agentCount = agentPagination?.totalItems || 0;
+
+  // Fetch data only on mount if empty
+  useEffect(() => {
+    if (cpCount === 0) dispatch(fetchChannelPartners());
+    if (agentCount === 0) dispatch(fetchAgents());
+    if (leadCount === 0) dispatch(fetchLeads());
+  }, [dispatch]);
+
+  // const stats = [
+  //   {
+  //     id: 1,
+  //     title: "Channel Partners",
+  //     count: cpCount || cptotal,
+  //     icon: <FiUsers size={24} />,
+  //     route: "/cps",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Agents",
+  //     count: agentCount || agenttotal,
+  //     icon: <FiUsers size={24} />,
+  //     route: "/agents",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Leads",
+  //     count: leadCount || leadtotal,
+  //     icon: <FiClipboard size={24} />,
+  //     route: "/leads",
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Bookings",
+  //     count: 74,
+  //     icon: <FiUserCheck size={24} />,
+  //     route: "/sales/bookings",
+  //   },
+  // ];
+  // Memoized stats to prevent recalculations
+
+  // Memoized stats
+  const stats = useMemo(() => [
+    {
+      id: 1,
+      title: "Channel Partners",
+      count: cpCount,
+      icon: <FiUsers size={24} />,
+      route: "/cps",
+    },
+    {
+      id: 2,
+      title: "Agents",
+      count: agentCount,
+      icon: <FiUsers size={24} />,
+      route: "/agents",
+    },
+    {
+      id: 3,
+      title: "Leads",
+      count: leadCount,
+      icon: <FiClipboard size={24} />,
+      route: "/leads",
+    },
+    {
+      id: 4,
+      title: "Bookings",
+      count: 74,
+      icon: <FiUserCheck size={24} />,
+      route: "/sales/bookings",
+    },
+  ], [cpCount, agentCount, leadCount]);
+  
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
