@@ -4,9 +4,9 @@ import api from "./../axios/Axios";
 // Fetch CPs
 export const fetchChannelPartners = createAsyncThunk(
   "channelPartners/fetch",
-  async (_, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/channel-partner`);
+      const response = await api.get(`/channel-partner`, { params });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

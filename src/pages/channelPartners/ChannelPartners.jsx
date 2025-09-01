@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import React, { useEffect } from "react";
 // import data from "../../utils/CPs";
 // import { FiEdit, FiTrash2 } from "react-icons/fi";
@@ -260,6 +261,7 @@ import { showSuccess, showError } from "../../components/toaster/Toasters";
 import dayjs from "dayjs";
 import StatusDialog from "../../components/dialogbox/StatusDialog";
 import ViewModal from "../../components/viewModal/ViewModal";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const statusOptions = ["All", "Active", "Inactive"];
 const cpStatusStyles = {
@@ -276,13 +278,13 @@ const ChannelPartners = () => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const dispatch = useDispatch();
-  const { cpList, isLoading, error } = useSelector(
-    (state) => state.channelPartners
-  );
+  const { cpList, isLoading, error } = useSelector((state) => state.channelPartners);
+  const { query } = useSelector((state) => state.search);
+   const debouncedQuery = useDebounce(query, 500);
 
   useEffect(() => {
-    dispatch(fetchChannelPartners());
-  }, [dispatch]);
+    dispatch(fetchChannelPartners(debouncedQuery ? { q: debouncedQuery } : {}));
+  }, [dispatch, debouncedQuery]);
 
   const handleView = (row) => {
     setSelectedCP(row);

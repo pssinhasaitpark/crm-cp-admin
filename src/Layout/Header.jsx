@@ -60,7 +60,7 @@
 //               display: "flex",
 //               alignItems: "center",
 //               justifyContent:'space-around'
-              
+
 //             }}
 //           >
 //             <InputBase placeholder="Search…"  />
@@ -163,13 +163,20 @@ import { IoNotificationsSharp } from "react-icons/io5";
 import { FiMenu } from "react-icons/fi";
 import ThemeToggle from "./ThemeToggle";
 import { useTheme } from "../components/context/ThemeProvider";
+import { setSearchQuery } from "../redux/slices/searchSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const Header = ({ onMenuClick }) => {
   const { theme } = useTheme();
   const bgHeader = theme === "dark" ? "bg-[#1e1e1e] border-b border-gray-700" : "bg-[#E3EDF9]";
   const textColor = theme === "dark" ? "text-white" : "text-black";
   const searchBg = theme === "dark" ? "bg-gray-800" : "bg-white";
+  const dispatch = useDispatch();
+  const query = useSelector((state) => state.search.query);
 
+  const handleSearchChange = (e) => {
+    dispatch(setSearchQuery(e.target.value));
+  };
   return (
     <header className={`${bgHeader} ${textColor} px-6 py-4`}>
       <div className="flex justify-between items-center text-center space-x-4">
@@ -184,6 +191,8 @@ const Header = ({ onMenuClick }) => {
             <input
               placeholder="Search…"
               className={`w-full border-none outline-none ${theme === "dark" ? "bg-gray-800 text-white" : "text-gray-700"}`}
+              value={query}
+              onChange={handleSearchChange}
             />
             <FaSearch className={theme === "dark" ? "text-gray-400" : "text-gray-600"} />
           </div>

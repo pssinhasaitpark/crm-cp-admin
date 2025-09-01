@@ -17,7 +17,7 @@ const TableHeaderActions = ({
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  const selectClasses = `appearance-none w-[160px] px-3 py-2 pr-8 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+  const selectClasses = `capitalize appearance-none w-[160px] px-3 py-2 pr-8 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
     isDark
       ? "bg-gray-800 text-gray-200 border-gray-600"
       : "bg-white text-gray-800 border-gray-300"
