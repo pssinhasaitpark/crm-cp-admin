@@ -16,7 +16,7 @@ import {
   LeaveDashboard,
 } from "./pages/index.js";
 import ProtectedRoute from "./routes/ProtectedRoutes/ProtectedRoute.jsx";
-import Profile from "./pages/profile/Profile.jsx";
+import Leads from "./pages/profile/Leads.jsx";
 import  { Toaster } from 'react-hot-toast';
 import "./app.css"
 import Projects from "./pages/projects/Projects.jsx";
@@ -41,13 +41,13 @@ function App() {
           <Route path="messages" element={<Messages />} />
           <Route path="performance" element={<Performance />} />
           {/* <Route path="payroll" element={<PayrollDashboard />} /> */}
-          <Route path="profile" element={<Profile />} />
+          <Route path="profile" element={<Leads />} />
                  {/*  Connect Sidebar Routes */}
           <Route path="dashboard" element={<DashboardCards />} />
           <Route path="projects" element={<Projects />} /> {/* Example placeholder */}
           <Route path="agents" element={<Jobs />} />
           <Route path="cps" element={<ChannelPartners />} />
-          <Route path="leads" element={<Profile />} />
+          <Route path="leads" element={<Leads />} />
 
           {/* Sales (Team Management) */}
           <Route path="sales/bookings" element={<BookingList />} />
@@ -61,8 +61,8 @@ function App() {
 
           {/* Other */}
           <Route path="chat-support" element={<Messages />} />
-          <Route path="help" element={<Profile />} />
-          <Route path="settings" element={<Profile />} />
+          <Route path="help" element={<Leads />} />
+          <Route path="settings" element={<Leads />} />
         </Route>
       </Routes>
     </>

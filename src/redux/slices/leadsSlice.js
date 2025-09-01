@@ -4,9 +4,9 @@ import api from "./../axios/Axios";
 // Fetch Leads
 export const fetchLeads = createAsyncThunk(
   "leads/fetch",
-  async (_, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue }) => {
     try {
-      const response = await api.get("/leads/admin");
+      const response = await api.get("/leads/admin", { params });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -26,6 +26,31 @@ export const createLead = createAsyncThunk(
     }
   }
 );
+// Fetch Master Status
+export const fetchMasterStatus = createAsyncThunk(
+  "leads/fetchMasterStatus",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/master-status");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+// Update Lead
+export const updateLead = createAsyncThunk(
+  "leads/update",
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const response = await api.patch(`/leads/admin/${id}`, { status });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
 
 const initialState = {
   leadList: [],
@@ -37,6 +62,7 @@ const initialState = {
     totalPages: 0,
     currentPage: 0,
   },
+  masterStatus: [], //
 };
 
 const leadsSlice = createSlice({
@@ -82,7 +108,32 @@ const leadsSlice = createSlice({
       .addCase(createLead.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-      });
+      })
+       // 👇 Master Status
+    .addCase(fetchMasterStatus.pending, (state) => {
+      state.isLoading = true;
+    })
+    .addCase(fetchMasterStatus.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.masterStatus = action.payload?.results || [];
+    })
+    .addCase(fetchMasterStatus.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    })
+    .addCase(updateLead.pending, (state) => {
+    state.isLoading = true;
+    state.successMessage = null;
+    state.error = null;
+  })
+  .addCase(updateLead.fulfilled, (state, action) => {
+    state.isLoading = false;
+    state.successMessage = action.payload?.message || "Lead updated successfully.";
+  })
+  .addCase(updateLead.rejected, (state, action) => {
+    state.isLoading = false;
+    state.error = action.payload;
+  });
   },
 });
 

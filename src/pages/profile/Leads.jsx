@@ -1,0 +1,277 @@
+import React, { useEffect, useState } from 'react'
+import DataTableComponent from '../../components/table/Table'
+import data from '../../utils/Leads'
+import { FiEdit, FiTrash2 } from 'react-icons/fi';
+import { useTheme } from "../../components/context/ThemeProvider";
+import StatusDropdown from '../../components/UI/Dropdown';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLeads, createLead, fetchMasterStatus, updateLead } from '../../redux/slices/leadsSlice';
+import { showError, showSuccess } from '../../components/toaster/Toasters';
+import dayjs from "dayjs";
+import { useDebounce } from '../../hooks/useDebounce';
+import AssignLeadDialog from '../../components/dialogbox/AssignedDialogbox';
+import { fetchAgents } from "../../redux/slices/agentSlice";
+
+const statusOptions = ["All", "New", "Contacted", "Follow Up", "Rejected",];
+const leadStatusStyles = {
+  "new": "bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-200",
+  "contacted": "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200",
+  "follow Up": "bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-200",
+  "rejected": "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200"
+};
+const Leads = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const dispatch = useDispatch();
+  const { leadList, isLoading, error, masterStatus } = useSelector((state) => state.leads);
+  const { agentList } = useSelector((state) => state.agents);
+  console.log(agentList)
+  const { query } = useSelector((state) => state.search);
+  const debouncedQuery = useDebounce(query, 500);
+  const [open, setOpen] = useState(false);
+  const [selectedLead, setSelectedLead] = useState(null);
+  const [selectedAgent, setSelectedAgent] = useState("");
+
+  const handleOpen = (lead) => {
+    setSelectedLead(lead);
+    setSelectedAgent(lead.assigned_to?.id || "");
+    setOpen(true);
+  };
+
+  useEffect(() => {
+    dispatch(fetchAgents());
+  }, [dispatch]);
+
+  const handleAssign = () => {
+    console.log("Assigning Lead:", selectedLead._id, "to Agent:", selectedAgent);
+    // TODO: dispatch(assignLead({ leadId: selectedLead._id, agentId: selectedAgent }))
+    setOpen(false);
+  };
+
+  // 🔍 Leads Fetch (debounced)
+  useEffect(() => {
+    dispatch(fetchLeads(debouncedQuery ? { q: debouncedQuery } : {}));
+  }, [dispatch, debouncedQuery]);
+
+  // 📌 Master Status ek hi baar laana hai
+  useEffect(() => {
+    dispatch(fetchMasterStatus());
+  }, [dispatch]);
+  // ✅ Status update ke liye separate function
+  const handleStatusChange = async (id, newStatus) => {
+    console.log("Changing status for:", id, "to", newStatus);
+    try {
+      const res = await dispatch(
+        updateLead({ id, status: newStatus })
+      ).unwrap();
+
+      showSuccess(res.message || "Lead status updated ✅");
+      dispatch(fetchLeads()); // Refresh karna ho toh
+    } catch (err) {
+      showError(err || "Failed to update ❌");
+    }
+  };
+  const statusOptions = [
+    "new",
+    "contacted",
+    "interested",
+    "not interested",
+    "follow-Up",
+    "site visit scheduled",
+    "site visit done",
+    "converted",
+    "lost",
+    "on hold",
+    "duplicate",
+    "dead lead"
+  ];
+
+  const columns = [
+    {
+      name: "Name",
+      selector: row => row.name,
+      sortable: true,
+    },
+    {
+      name: "Email",
+      selector: row => row.email,
+    },
+    {
+      name: "Phone",
+      selector: row => row.phone_number,
+    },
+    {
+      name: "Interested In",
+      selector: row => row.interested_in,
+    },
+    {
+      name: "Source",
+      selector: row => row.source,
+    },
+    {
+      name: "Date",
+      selector: row => row.date,
+    },
+    {
+      name: "Created By",
+      selector: row => row.created_by || "Admin",
+    },
+    {
+      name: "Status",
+      selector: row => row.status || "",  // ✅ row.status me object ho sakta hai
+      cell: (row) => (
+        <StatusDropdown
+          value={row.status}
+          // onChange={(newStatus) => {
+          // console.log("Changed:", row.name, "=>", newStatus);
+          onChange={(newStatus) => handleStatusChange(row._id, newStatus)}
+          // }}
+          options={masterStatus.map(status => ({
+            label: status.name,   // Dropdown me dikhana hai
+            value: status._id     // Backend ko bhejna hai
+          }))}
+          isDark={isDark}
+        />
+      ),
+      minWidth: "190px",
+    },
+    {
+      name: "Assigned To",
+      cell: (row) => (
+        <div>
+          {row.assigned_to ? (
+            <button
+              onClick={() => handleOpen(row)}
+              className="px-2 py-1 text-sm font-medium"
+            >
+              {row.name || "Assigned"}
+            </button>
+          ) : (
+            <button
+              onClick={() => handleOpen(row)}
+              className="px-3 py-1 rounded-lg bg-blue-500 text-white hover:bg-blue-600 text-sm"
+            >
+              Assign
+            </button>
+          )}
+        </div>
+      ),
+       minWidth: "210px",
+    },
+    {
+      name: "Action",
+      cell: row => (
+        <div className="flex gap-2">
+          <button
+            title="Edit"
+            onClick={() => console.log("Edit", row)}
+            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            <FiEdit />
+          </button>
+          <button
+            title="Delete"
+            onClick={() => console.log("Delete", row)}
+            className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+          >
+            <FiTrash2 />
+          </button>
+        </div>
+      ),
+      ignoreRowClick: true,
+      $allowOverflow: true,
+      $button: true,
+    }
+  ];
+  const handleAddMember = (data) => {
+    console.log("New Member:", data);
+    // 🔁 Add logic to update state or send API
+  };
+  const handleAdd = () => console.log("Add New Channel Partner");
+  const handleExport = () => console.log("Export clicked");
+  const handleDownload = () => console.log("Download CSV clicked");
+  const handleSubmit = async (values, { resetForm }) => {
+    try {
+      const payload = {
+        ...values,
+        date: dayjs(values.date).format("DD/MM/YYYY"), // ✅ formatted date
+      };
+      const response = await dispatch(createLead(payload)).unwrap();
+      showSuccess(response.message || "Lead created successfully");
+      dispatch(fetchLeads()); // refresh table
+      resetForm();
+      return true;
+    } catch (err) {
+      showError(err.message || "Failed to create lead");
+      return false;
+    }
+  };
+
+  const leadFormFields = [
+    {
+      name: "name",
+      label: "Name",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "email",
+      label: "Email",
+      type: "email",
+      required: true,
+    },
+    {
+      name: "phone_number",
+      label: "Phone",
+      type: "mobile_number",
+      required: true,
+    },
+    {
+      name: "interested_in",
+      label: "Interested In",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "source",
+      label: "Source",
+      type: "select",
+      options: ["Website", "Referral", "Walk-in", "Ad Campaign"], // Customize as needed
+      required: true,
+    },
+    {
+      name: "date",
+      label: "Date",
+      type: "date",
+      required: true,
+    },
+  ];
+  return (
+    <div className={`min-h-auto py-6 ${isDark ? "bg-[#1e1e1e] text-gray-100 " : "bg-white text-gray-800"}`}>
+      <DataTableComponent
+        data={leadList}
+        columns={columns}
+        title='Leads Table'
+        filterByStatus={true}
+        statusOptions={statusOptions}
+        formFields={leadFormFields}
+        formLabel='Add Leads Form'
+        onAdd={handleAdd}
+        onExport={handleExport}
+        onDownload={handleDownload}
+        addLabel="Add Lead"
+        onSubmit={handleSubmit}
+      />
+      <AssignLeadDialog
+        open={open}
+        onClose={setOpen}
+        agents={agentList}
+        selectedAgent={selectedAgent}
+        onChange={setSelectedAgent}
+        onSubmit={handleAssign}
+      />
+    </div>
+  )
+}
+
+export default Leads
