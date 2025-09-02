@@ -581,21 +581,74 @@ const FormDialog = ({
               .required(`${field.label} is required`);
             break;
 
+          // case "file":
+          //   schema[field.name] = Yup.mixed()
+          //     .required(`${field.label} is required`)
+          //     // .test("fileSize", "File size too large (max 2MB)", (value) =>
+          //     //   value ? value.size <= 2 * 1024 * 1024 : false
+          //     // )
+          //     // .test("fileType", "Unsupported file type", (value) =>
+          //     //   value
+          //     //     ? ["image/jpeg", "image/png", "application/pdf"].includes(
+          //     //       value.type
+          //     //     )
+          //     //     : false
+          //     // );
+          //     .test("fileSize", "File size too large (max 2MB)", (value) => {
+          //       if (!value) return false; // Required field ke liye error show hoga
+          //       if (field.multiple) {
+          //         return Array.from(value).every((file) => file.size <= 2 * 1024 * 1024);
+          //       }
+          //       return value.size <= 2 * 1024 * 1024;
+          //     })
+          //     .test("fileType", "Unsupported file type", (value) => {
+          //       if (!value) return false; // Required field ke liye error show hoga
+          //       const acceptTypes = field.accept.split(",").map(type => type.trim().toLowerCase());
+          //       if (field.multiple) {
+          //         return Array.from(value).every((file) =>
+          //           acceptTypes.some((type) => file.type.toLowerCase().includes(type))
+          //         );
+          //       }
+          //       return acceptTypes.some((type) => value.type.toLowerCase().includes(type));
+          //     });              
+          //   break;
           case "file":
-            schema[field.name] = Yup.mixed()
-              .required(`${field.label} is required`)
-              .test("fileSize", "File size too large (max 2MB)", (value) =>
-                value ? value.size <= 2 * 1024 * 1024 : false
-              )
-              .test("fileType", "Unsupported file type", (value) =>
-                value
-                  ? ["image/jpeg", "image/png", "application/pdf"].includes(
-                    value.type
-                  )
-                  : false
-              );
-            break;
-
+            let fileSchema = Yup.mixed().required(`${field.label} is required`);
+          
+          // Only check file type if 'accept' is provided
+          if (field.accept) {
+            fileSchema = fileSchema.test(
+              "fileType",
+              "Unsupported file type",
+              (value) => {
+                if (!value) return false;
+                const acceptTypes = field.accept.split(",").map(type => type.trim().toLowerCase());
+                if (field.multiple) {
+                  return Array.from(value).every((file) =>
+                    acceptTypes.some((type) => file.type.toLowerCase().includes(type))
+                  );
+                }
+                return acceptTypes.some((type) => value.type.toLowerCase().includes(type));
+              }
+            );
+          }
+          
+          // Always check file size
+          fileSchema = fileSchema.test(
+            "fileSize",
+            "File size too large (max 2MB)",
+            (value) => {
+              if (!value) return false;
+              if (field.multiple) {
+                return Array.from(value).every((file) => file.size <= 2 * 1024 * 1024);
+              }
+              return value.size <= 2 * 1024 * 1024;
+            }
+          );
+          
+          schema[field.name] = fileSchema;
+          break;
+          
           default:
             schema[field.name] = Yup.string().required(
               `${field.label} is required`
@@ -711,12 +764,19 @@ const FormDialog = ({
           <input
             type="file"
             name={field.name}
+            // onChange={(e) => {
+            //   const file = e.currentTarget.files[0];
+            //   formik.setFieldValue(field.name, file || null);
+            // }}
             onChange={(e) => {
-              const file = e.currentTarget.files[0];
-              formik.setFieldValue(field.name, file || null);
+              const files = field.multiple ? e.currentTarget.files : e.currentTarget.files[0];
+              formik.setFieldValue(field.name, files || null);
             }}
+  
             onBlur={() => formik.setFieldTouched(field.name, true)}
             className={commonClasses}
+            multiple={field.multiple}
+            accept={field.accept}
           />
         );
 
@@ -856,7 +916,7 @@ const FormDialog = ({
               className={`absolute top-4 right-4 hidden sm:block ${isDark ? "text-white" : "text-gray-500"
                 } cursor-pointer`}
             >
-              <Cross2Icon />
+              <Cross2Icon height={20} width={20}/>
             </button>
           </Dialog.Close>
         </Dialog.Content>

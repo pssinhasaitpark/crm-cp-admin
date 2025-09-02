@@ -23,6 +23,7 @@ import Projects from "./pages/projects/Projects.jsx";
 import ChannelPartners from "./pages/channelPartners/ChannelPartners.jsx";
 import BookingList from "./pages/candidate/Candidate.jsx";
 import PaymentAndInvoice from "./pages/paymentInvoice/PaymentAndInvoice.jsx";
+import NotFound from "./pages/pageNotFound/PageNotFound.jsx";
 function App() {
   return (
     <>
@@ -64,6 +65,7 @@ function App() {
           <Route path="help" element={<Leads />} />
           <Route path="settings" element={<Leads />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

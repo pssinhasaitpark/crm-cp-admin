@@ -474,21 +474,21 @@ const ChannelPartners = () => {
 
   return (
     <div
-      className={`min-h-auto py-6 rounded-lg shadow-lg ${
+      className={`min-h-auto py-6   ${
         isDark
-          ? "bg-[#1e1e1e] text-gray-100 shadow-[0_4px_12px_rgba(255,255,255,0.15)]"
-          : "bg-gray-50 text-gray-800 shadow-[0_4px_12px_rgba(0,0,0,0.1)]"
+          ? "bg-[#1e1e1e] text-gray-100 "
+          : "bg-white text-gray-800 "
       }`}
     >
-      {/* Show error only if there's an error and no data */}
+      {/* Show error only if there's an error and no data
       {error && cpList.length === 0 && (
         <p className="text-center text-red-500">
           {error.message || "Failed to fetch data"}
         </p>
-      )}
+      )} */}
 
       {/* Always show table if no critical error */}
-      {(!error || cpList.length > 0) && (
+      {/* {(!error || cpList.length > 0) && (  */}
         <DataTableComponent
           data={cpList}
           columns={columns}
@@ -503,7 +503,7 @@ const ChannelPartners = () => {
           addLabel="New CPs"
           onSubmit={handleSubmit}
         />
-      )}
+      {/* )} */}
       {/* ------- Model For Change the Status of Channel Partner------- */}
       <StatusDialog
         isOpen={isStatusModalOpen}
