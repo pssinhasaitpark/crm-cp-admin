@@ -42,9 +42,21 @@ export const fetchMasterStatus = createAsyncThunk(
 // Update Lead
 export const updateLead = createAsyncThunk(
   "leads/update",
-  async ({ id, status }, { rejectWithValue }) => {
+  async ({ id, ...updateddata }, { rejectWithValue }) => {
     try {
-      const response = await api.patch(`/leads/admin/${id}`, { status });
+      const response = await api.patch(`/leads/admin/${id}`, updateddata);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+// 👇 Fetch Leads By Agent ID
+export const fetchLeadsByAgentId = createAsyncThunk(
+  "leads/fetchByAgentId",
+  async ({ agentId }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/leads/admin/${agentId}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -54,6 +66,7 @@ export const updateLead = createAsyncThunk(
 
 const initialState = {
   leadList: [],
+  agentLeadList: [],
   isLoading: false,
   error: null,
   successMessage: null,
@@ -103,37 +116,55 @@ const leadsSlice = createSlice({
       })
       .addCase(createLead.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.successMessage = action.payload?.message || "Lead created successfully.";
+        state.successMessage =
+          action.payload?.message || "Lead created successfully.";
       })
       .addCase(createLead.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
-       // 👇 Master Status
-    .addCase(fetchMasterStatus.pending, (state) => {
-      state.isLoading = true;
-    })
-    .addCase(fetchMasterStatus.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.masterStatus = action.payload?.results || [];
-    })
-    .addCase(fetchMasterStatus.rejected, (state, action) => {
-      state.isLoading = false;
-      state.error = action.payload;
-    })
-    .addCase(updateLead.pending, (state) => {
-    state.isLoading = true;
-    state.successMessage = null;
-    state.error = null;
-  })
-  .addCase(updateLead.fulfilled, (state, action) => {
-    state.isLoading = false;
-    state.successMessage = action.payload?.message || "Lead updated successfully.";
-  })
-  .addCase(updateLead.rejected, (state, action) => {
-    state.isLoading = false;
-    state.error = action.payload;
-  });
+      // 👇 Master Status
+      .addCase(fetchMasterStatus.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchMasterStatus.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.masterStatus = action.payload?.results || [];
+      })
+      .addCase(fetchMasterStatus.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateLead.pending, (state) => {
+        state.isLoading = true;
+        state.successMessage = null;
+        state.error = null;
+      })
+      .addCase(updateLead.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.successMessage =
+          action.payload?.message || "Lead updated successfully.";
+      })
+      .addCase(updateLead.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchLeadsByAgentId.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchLeadsByAgentId.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.agentLeadList = action.payload.results || [];
+        state.pagination = {
+          totalItems: action.payload.totalItems || 0,
+          totalPages: action.payload.totalPages || 0,
+          currentPage: action.payload.currentPage || 0,
+        };
+      })
+      .addCase(fetchLeadsByAgentId.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
   },
 });
 

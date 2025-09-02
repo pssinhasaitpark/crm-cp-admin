@@ -44,8 +44,8 @@ import CountUp from "react-countup";
 import { useTheme } from "../../components/context/ThemeProvider"; // Custom hook from ThemeProvider
 import ChannelPartners from "../../pages/channelPartners/ChannelPartners";
 import Projects from "../../pages/projects/Projects";
-import { Jobs } from "../../pages";
-import Profile from "../../pages/profile/Profile";
+import { Agents } from "../../pages";
+import Leads from "../../pages/leads/Leads";
 import { fetchChannelPartners } from "../../redux/slices/channelPartnersSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchLeads } from "../../redux/slices/leadsSlice";
@@ -53,7 +53,7 @@ import { fetchAgents } from "../../redux/slices/agentSlice";
 import { useMemo } from "react";
 
 
-const components = [Projects, Jobs, ChannelPartners, Profile];
+const components = [Projects, Agents, ChannelPartners, Leads];
 const StatsCards = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
@@ -179,8 +179,8 @@ const StatsCards = () => {
         ))}
       </div>
       <ChannelPartners />
-      <Jobs />
-      <Profile />
+      <Agents />
+      <Leads />
       <Projects />
     </>
   );

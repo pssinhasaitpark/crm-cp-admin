@@ -1,6 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Select from "@radix-ui/react-select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "../context/ThemeProvider"; // custom hook
 import { IoChevronDown, IoCheckmark, IoClose } from "react-icons/io5";
 
@@ -10,16 +10,24 @@ export default function AssignLeadDialog({
   lead,
   agents,
   onAssign,
-  onClose
+  onClose,
+  onSubmit
 }) {
   const [selectedAgent, setSelectedAgent] = useState("");
   const { theme } = useTheme(); // "light" | "dark"
+   // ✅ Preset assigned agent
+  useEffect(() => {
+    if (lead?.assigned_to) {
+      setSelectedAgent(lead.assigned_to);
+    } else {
+      setSelectedAgent("");
+    }
+  }, [lead, open]);
 
   const handleAssign = () => {
-    console.log("asdas")
+    console.log(selectedAgent)
     if (selectedAgent) {
-      // onAssign(lead._id, selectedAgent);
-      // onOpenChange(false); // close modal after assign
+      onSubmit(selectedAgent);
       onClose();
     }
   };
@@ -80,7 +88,7 @@ export default function AssignLeadDialog({
               >
                 <Select.Viewport>
                   {agents.map((agent) => (
-                    console.log(agent),
+                    // console.log(agent),
                     <Select.Item
                       key={agent._id}
                       value={agent._id}
@@ -97,7 +105,6 @@ export default function AssignLeadDialog({
               </Select.Content>
             </Select.Portal>
           </Select.Root>
-
           {/* Footer Buttons */}
           <div className="mt-6 flex justify-end gap-3">
             <Dialog.Close asChild>
@@ -105,7 +112,7 @@ export default function AssignLeadDialog({
                onClick={() => {
                 onClose();
               }}
-                className={`rounded-md border px-4 py-2 text-sm 
+                className={`rounded-md border px-4 py-2 text-sm cursor-pointer
                   ${theme === "dark" ? "border-gray-600 text-gray-100 hover:bg-gray-700" : "border-gray-300 text-gray-900 hover:bg-gray-100"}`}
               >
                 Cancel
@@ -114,7 +121,7 @@ export default function AssignLeadDialog({
             <button
               onClick={handleAssign}
               disabled={!selectedAgent}
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white 
+              className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white cursor-pointer
                 hover:bg-blue-700 
                 disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -128,7 +135,7 @@ export default function AssignLeadDialog({
               onClick={() => {
                 onClose();
               }}
-              className={`absolute top-3 right-3 rounded-full p-1 
+              className={`absolute top-3 right-3 rounded-full p-1 cursor-pointer
                 ${theme === "dark" ? "text-gray-400 hover:text-gray-200" : "text-gray-500 hover:text-gray-700"}`}
             >
               <IoClose className="h-5 w-5" />
