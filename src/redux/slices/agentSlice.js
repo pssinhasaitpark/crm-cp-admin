@@ -4,9 +4,9 @@ import api from "./../axios/Axios";
 // Fetch Agents
 export const fetchAgents = createAsyncThunk(
   "agents/fetch",
-  async (_, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/agent`);
+      const response = await api.get(`/agent`, { params });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);

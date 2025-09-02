@@ -9,14 +9,15 @@ import {
   Performance,
   Messages,
   Candidate,
-  Jobs,
+  Agents,
   Resume,
   EmployeeDetails,
   EmployeeDashboard,
   LeaveDashboard,
+  AgentsLead
 } from "./pages/index.js";
 import ProtectedRoute from "./routes/ProtectedRoutes/ProtectedRoute.jsx";
-import Leads from "./pages/profile/Leads.jsx";
+import Leads from "./pages/leads/Leads.jsx";
 import  { Toaster } from 'react-hot-toast';
 import "./app.css"
 import Projects from "./pages/projects/Projects.jsx";
@@ -35,7 +36,7 @@ function App() {
           <Route path="employees" element={<EmployeeDashboard />} />
           <Route path="employees/:id" element={<EmployeeDetails />} />
           <Route path="leaves" element={<LeaveDashboard />} />
-          <Route path="jobs" element={<Jobs />} />
+          <Route path="jobs" element={<Agents />} />
           <Route path="resumes" element={<Resume />} />
           <Route path="candidates" element={<Candidate />} />
           <Route path="messages" element={<Messages />} />
@@ -45,7 +46,8 @@ function App() {
                  {/*  Connect Sidebar Routes */}
           <Route path="dashboard" element={<DashboardCards />} />
           <Route path="projects" element={<Projects />} /> {/* Example placeholder */}
-          <Route path="agents" element={<Jobs />} />
+          <Route path="agents" element={<Agents />} />
+          <Route path="agents/:agentIdx/leads" element={<AgentsLead />} />
           <Route path="cps" element={<ChannelPartners />} />
           <Route path="leads" element={<Leads />} />
 

@@ -141,6 +141,10 @@ import { showError, showSuccess } from "../../components/toaster/Toasters";
 import { createAgent, fetchAgents } from "../../redux/slices/agentSlice";
 import ViewModal from "../../components/viewModal/ViewModal";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
+import StatusDialog from "../../components/dialogbox/StatusDialog";
+import { updateChannelPartnerStatus } from "../../redux/slices/channelPartnersSlice";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const agentStatusStyles = {
   active:
@@ -217,18 +221,22 @@ const agentStatusStyles = {
 //   }
 // ];
 
-const Jobs = () => {
-  const [isViewModalOpen, setViewModalOpen] = useState(false);
+const Agents = () => {
   const [isStatusModalOpen, setStatusModalOpen] = useState(false);
+  const [isViewModalOpen, setViewModalOpen] = useState(false);
+  // const [isStatusModalOpen, setStatusModalOpen] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState(null);
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const dispatch = useDispatch();
   const { agentList, isLoading, error } = useSelector((state) => state.agents);
+  const navigate=useNavigate();
+  const { query } = useSelector((state) => state.search);
+  const debouncedQuery = useDebounce(query, 500);
 
   useEffect(() => {
-    dispatch(fetchAgents());
-  }, [dispatch]);
+    dispatch(fetchAgents(debouncedQuery ? { q: debouncedQuery } : {}));
+  }, [dispatch,debouncedQuery]);
   // console.log("agentList List:", agentList);
   const handleView = (row) => {
     setSelectedAgent(row);
@@ -281,19 +289,31 @@ const Jobs = () => {
     {
       name: "Leads",
       selector: (row) => row.leads_count || 0,
+      cell: (row) => (
+        <button
+          onClick={() => navigate(`/agents/${row._id}/leads`)} // ✅ navigate with agentId
+          className="cursor-pointer"
+        >
+          {row.leads_count || 0}
+        </button>
+      ),
     },
     {
       name: "Status",
       selector: (row) => row.status,
       cell: (row) => (
-        <span
-          className={`text-xs px-2 py-1 rounded-full font-medium ${
+        <button
+        onClick={() => {
+            setSelectedAgent(row);
+            setStatusModalOpen(true);
+          }}
+          className={`text-xs px-2 py-1 rounded-full font-medium cursor-pointer ${
             agentStatusStyles[row.status?.toLowerCase()] ||
             "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
           }`}
         >
           {row.status}
-        </span>
+        </button>
       ),
     },
     {
@@ -351,7 +371,8 @@ const Jobs = () => {
       // ✅ Success toast
       showSuccess(result.message || "Channel Partner added successfully");
       resetForm();
-      dispatch(fetchAgents());
+      // dispatch(fetchAgents());
+       dispatch(fetchAgents(debouncedQuery ? { q: debouncedQuery } : {}));
       return true; // ✅ Indicate success
     } catch (error) {
       console.error("Error adding channel partner:", error);
@@ -428,6 +449,33 @@ const Jobs = () => {
           onSubmit={handleSubmit}
         />
       )}
+      {/* ------- Model For Change the Status of Channel Partner------- */}
+      <StatusDialog
+        isOpen={isStatusModalOpen}
+        onClose={() => setStatusModalOpen(false)}
+        alldetails={selectedAgent}
+        currentStatus={selectedAgent?.status}
+        onSubmit={(newStatus) => {
+          if (newStatus !== selectedAgent.status) {
+            dispatch(
+              updateChannelPartnerStatus({
+                id: selectedAgent?._id,
+                status: newStatus,
+              })
+            )
+              .unwrap()
+              .then((res) => {
+                showSuccess(res.message || "Status updated successfully");
+                // dispatch(fetchAgents()); // Optional: Only if backend affects more fields
+               dispatch(fetchAgents(debouncedQuery ? { q: debouncedQuery } : {}));
+              })
+              .catch((err) => {
+                showError(err.message || "Failed to update status");
+              });
+          }
+          setStatusModalOpen(false);
+        }}
+      />
        {/* -----Model For View Details------ */}
        <ViewModal
         isOpen={isViewModalOpen}
@@ -441,4 +489,4 @@ const Jobs = () => {
   );
 };
 
-export default Jobs;
+export default Agents;
