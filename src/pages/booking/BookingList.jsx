@@ -277,60 +277,12 @@ const BookingList = () => {
   const handleExport = () => console.log("Export clicked");
   const handleDownload = () => console.log("Download CSV clicked");
 
-  const bookingFormFields = [
-    {
-      name: "customerName",
-      label: "Customer Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "propertyName",
-      label: "Property Name / ID",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "agentName",
-      label: "Assigned Agent / Channel Partner",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "bookingDate",
-      label: "Booking Date",
-      type: "date",
-      required: true,
-    },
-    {
-      name: "amount",
-      label: "Amount",
-      type: "number",
-      required: true,
-    },
-    {
-      name: "paymentStatus",
-      label: "Payment Status",
-      type: "select",
-      options: ["Paid", "Unpaid", "Refunded"],
-      required: true,
-    },
-    {
-      name: "bookingStatus",
-      label: "Booking Status",
-      type: "select",
-      options: ["Confirmed", "Pending", "Cancelled", "Completed"],
-      required: true,
-    },
-  ];
-
   return (
     <div className={`min-h-auto py-6 rounded-lg shadow-lg ${isDark ? "bg-[#1e1e1e] text-gray-100 " : "bg-white text-gray-800"}`}>
       <DataTableComponent
         data={data} // Replace with your actual bookings data
         columns={columns}
         title="Bookings List"
-        formFields={bookingFormFields}
         formLabel="Add Booking"
         onAdd={handleAddBooking}
         onExport={handleExport}
