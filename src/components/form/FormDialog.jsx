@@ -728,7 +728,6 @@ const FormDialog = ({
         </div>
       );
     }
-
     switch (field.type) {
       case "select":
         return (
