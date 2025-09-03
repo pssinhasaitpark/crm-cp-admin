@@ -3,36 +3,77 @@ import DataTable from "react-data-table-component";
 import TableHeaderActions from "./TableHeaderActions";
 import FormDialog from "../form/FormDialog";
 import { useTheme } from "../../components/context/ThemeProvider"; // ✅ Import theme context
+import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+
+// 👇 Plugin enable karo ek hi jagah (top of file me)
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 const DataTableComponent = ({
   data = [],
   columns = [],
   title = "Projects Table",
-  onAdd = () => {},
-  onExport = () => {},
-  onDownload = () => {},
-  onSubmit = () => {},
+  onAdd = () => { },
+  onExport = () => { },
+  onDownload = () => { },
+  onSubmit = () => { },
   filterByStatus = false,
   statusOptions = ["All", "Active", "Inactive"],
   addLabel = "Add New",
   showFilter = true,
   formFields = [],
-  formLabel="Add",
+  formLabel = "Add",
   showAddButton = true,
 }) => {
   const { theme } = useTheme(); // ✅ Get theme
   const isDark = theme === "dark";
   const [statusFilter, setStatusFilter] = React.useState("All");
+  const [dateFilter, setDateFilter] = React.useState({ from: null, to: null });
+  // const filteredData = React.useMemo(() => {
+  //   if (!filterByStatus || statusFilter === "All") return data;
+  //   return data.filter(
+  //     (item) =>
+  //       item.status &&
+  //       item.status.toLowerCase() === statusFilter.toLowerCase()
+  //   );
+  //    if (dateFilter.from && dateFilter.to) {
+  //   filtered = filtered.filter((item) => {
+  //     const itemDate = new Date(item.date); // 👈 ensure `item.date` correct format hai
+  //     return (
+  //       itemDate >= dateFilter.from && itemDate <= dateFilter.to
+  //     );
+  //   });
+  // }
+  // }, [data, statusFilter, filterByStatus,dateFilter]);
+const filteredData = React.useMemo(() => {
+  let filtered = data;
 
-  const filteredData = React.useMemo(() => {
-    if (!filterByStatus || statusFilter === "All") return data;
-    return data.filter(
+  // ✅ Status filter
+  if (filterByStatus && statusFilter !== "All") {
+    filtered = filtered.filter(
       (item) =>
         item.status &&
         item.status.toLowerCase() === statusFilter.toLowerCase()
     );
-  }, [data, statusFilter, filterByStatus]);
-  
+  }
+
+  // ✅ Date range filter
+  if (dateFilter.from && dateFilter.to) {
+    filtered = filtered.filter((item) => {
+      const itemDate = dayjs(item.date); // 👈 safe parse
+      return (
+        itemDate?.isSameOrAfter(dayjs(dateFilter.from), "day") &&
+        itemDate?.isSameOrBefore(dayjs(dateFilter.to), "day")
+      );
+    });
+  }
+
+  return filtered;
+}, [data, statusFilter, filterByStatus, dateFilter]);
+const resetDateFilter = () => setDateFilter({ from: null, to: null });
+
   const customStyles = {
     headCells: {
       style: {
@@ -64,9 +105,8 @@ const DataTableComponent = ({
     },
   };
   return (
-    <div  className={`p-4 rounded-md shadow-md ${
-      isDark ? "bg-[#1e1e1e] text-white border border-gray-700" : "bg-white text-black shadow-md"
-    }`}>
+    <div className={`p-4 rounded-md shadow-md ${isDark ? "bg-[#1e1e1e] text-white border border-gray-700" : "bg-white text-black shadow-md"
+      }`}>
       <TableHeaderActions
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
@@ -87,6 +127,9 @@ const DataTableComponent = ({
         }
         showFilter={showFilter}
         showAddButton={showAddButton}
+        dateFilter={dateFilter}
+        setDateFilter={setDateFilter}
+        resetDateFilter={resetDateFilter}
       />
 
       <div >

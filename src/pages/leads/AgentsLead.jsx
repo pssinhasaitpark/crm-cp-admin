@@ -59,7 +59,8 @@ const handleAssign = async (agentId) => {
 
     showSuccess(res.message || "Lead assigned successfully ✅");
     setOpen(false);
-    dispatch(fetchLeads()); // refresh table
+    // dispatch(fetchLeads()); // refresh table
+    dispatch(fetchLeadsByAgentId({ agentId: agentIdx }));
   } catch (err) {
     showError(err.message || "Failed to assign ❌");
   }
@@ -86,12 +87,14 @@ const handleAssign = async (agentId) => {
       ).unwrap();
 
       showSuccess(res.message || "Lead status updated ✅");
-      dispatch(fetchLeads()); // Refresh karna ho toh
+      // dispatch(fetchLeads()); // Refresh karna ho toh
+      dispatch(fetchLeadsByAgentId({ agentId: agentIdx }));
     } catch (err) {
       showError(err || "Failed to update ❌");
     }
   };
   const statusOptions = [
+    "All",
     "new",
     "contacted",
     "interested",
@@ -163,6 +166,7 @@ const handleAssign = async (agentId) => {
     {
       name: "Created By",
       selector: row => row.created_by || "Admin",
+      // selector: row => `${row.created_by} (${row.created_by_name || "Admin"}) `,
     },
     {
       name: "Status",
@@ -209,7 +213,9 @@ const handleAssign = async (agentId) => {
               className="px-2 py-1 text-sm font-medium cursor-pointer"
             >
               {/* {console.log(row)} */}
-              {row.assigned_to_name || "Assigned"}
+              {/* {row.assigned_to_name || "Assigned"} */}
+              {row.assigned_to_name} ({row.assigned_to_model})
+
             </button>
           ) : (
             <button

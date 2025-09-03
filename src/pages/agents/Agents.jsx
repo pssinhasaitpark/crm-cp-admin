@@ -230,19 +230,19 @@ const Agents = () => {
   const isDark = theme === "dark";
   const dispatch = useDispatch();
   const { agentList, isLoading, error } = useSelector((state) => state.agents);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const { query } = useSelector((state) => state.search);
   const debouncedQuery = useDebounce(query, 500);
 
   useEffect(() => {
     dispatch(fetchAgents(debouncedQuery ? { q: debouncedQuery } : {}));
-  }, [dispatch,debouncedQuery]);
+  }, [dispatch, debouncedQuery]);
   // console.log("agentList List:", agentList);
   const handleView = (row) => {
     setSelectedAgent(row);
     setViewModalOpen(true);
   };
-  
+
   // Optional: Custom labels for better UI
   const fieldLabels = {
     mobile_number: "Phone",
@@ -257,7 +257,7 @@ const Agents = () => {
     leadsCount: "Leads",
     state: "Location",
   };
-  
+
   // Optional: Formatters for specific fields
   const fieldFormatters = {
     year_of_experience: (val) => `${val} years`,
@@ -287,6 +287,19 @@ const Agents = () => {
       selector: (row) => row.state,
     },
     {
+      name: "Agent Type",
+      cell: (row) => {
+        const formatAgentType = (type) => {
+          if (!type) return "-";
+          if (type === "in_house") return "Inhouse";
+          if (type === "external") return "External";
+          return type.charAt(0).toUpperCase() + type.slice(1);
+        };
+
+        return <span>{formatAgentType(row.agent_type)}</span>;
+      },
+    },
+    {
       name: "Leads",
       selector: (row) => row.leads_count || 0,
       cell: (row) => (
@@ -303,14 +316,13 @@ const Agents = () => {
       selector: (row) => row.status,
       cell: (row) => (
         <button
-        onClick={() => {
+          onClick={() => {
             setSelectedAgent(row);
             setStatusModalOpen(true);
           }}
-          className={`text-xs px-2 py-1 rounded-full font-medium cursor-pointer ${
-            agentStatusStyles[row.status?.toLowerCase()] ||
+          className={`text-xs px-2 py-1 rounded-full font-medium cursor-pointer ${agentStatusStyles[row.status?.toLowerCase()] ||
             "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
-          }`}
+            }`}
         >
           {row.status}
         </button>
@@ -352,7 +364,7 @@ const Agents = () => {
       $button: true,
     },
   ];
-  
+
   const handleAddMember = (data) => {
     console.log("New Member:", data);
     // 🔁 Add logic to update state or send API
@@ -372,7 +384,7 @@ const Agents = () => {
       showSuccess(result.message || "Channel Partner added successfully");
       resetForm();
       // dispatch(fetchAgents());
-       dispatch(fetchAgents(debouncedQuery ? { q: debouncedQuery } : {}));
+      dispatch(fetchAgents(debouncedQuery ? { q: debouncedQuery } : {}));
       return true; // ✅ Indicate success
     } catch (error) {
       console.error("Error adding channel partner:", error);
@@ -422,12 +434,21 @@ const Agents = () => {
       required: true,
     },
     { name: "id_proof", label: "ID Proof", type: "file", required: true },
+    {
+      name: "agent_type",
+      label: "Agent Type",
+      type: "radio",
+      required: true,
+      options: [
+        { label: "Inhouse", value: "in_house" },
+        { label: "External", value: "external" },
+      ],
+    }
   ];
   return (
     <div
-      className={`min-h-auto py-6 ${
-        isDark ? "bg-[#1e1e1e] text-gray-100" : "bg-white text-gray-800"
-      }`}
+      className={`min-h-auto py-6 ${isDark ? "bg-[#1e1e1e] text-gray-100" : "bg-white text-gray-800"
+        }`}
     >
       {error && (
         <p className="text-center text-red-500">
@@ -467,7 +488,7 @@ const Agents = () => {
               .then((res) => {
                 showSuccess(res.message || "Status updated successfully");
                 // dispatch(fetchAgents()); // Optional: Only if backend affects more fields
-               dispatch(fetchAgents(debouncedQuery ? { q: debouncedQuery } : {}));
+                dispatch(fetchAgents(debouncedQuery ? { q: debouncedQuery } : {}));
               })
               .catch((err) => {
                 showError(err.message || "Failed to update status");
@@ -476,8 +497,8 @@ const Agents = () => {
           setStatusModalOpen(false);
         }}
       />
-       {/* -----Model For View Details------ */}
-       <ViewModal
+      {/* -----Model For View Details------ */}
+      <ViewModal
         isOpen={isViewModalOpen}
         onClose={() => setViewModalOpen(false)}
         title="Agent Details"

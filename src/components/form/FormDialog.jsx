@@ -531,6 +531,11 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { LuLoader } from "react-icons/lu";
 import { EyeOpenIcon, EyeClosedIcon } from "@radix-ui/react-icons";
+import InterestedIn from "../../pages/leads/InterestedIn"
+import SearchableDropdown from "../../pages/leads/InterestedIn";
+import SearchSelect from "../../pages/leads/InterestedIn";
+import SearchableSelect from "../../pages/leads/InterestedIn";
+
 
 const FormDialog = ({
   title = "Form",
@@ -543,7 +548,7 @@ const FormDialog = ({
   const isDark = theme === "dark";
   const [open, setOpen] = useState(false);
   const [visiblePasswords, setVisiblePasswords] = useState({});
-  
+
   const Spinner = () => (
     <div className="animate-spin h-4 w-4">
       <LuLoader />
@@ -614,41 +619,41 @@ const FormDialog = ({
           //   break;
           case "file":
             let fileSchema = Yup.mixed().required(`${field.label} is required`);
-          
-          // Only check file type if 'accept' is provided
-          if (field.accept) {
+
+            // Only check file type if 'accept' is provided
+            if (field.accept) {
+              fileSchema = fileSchema.test(
+                "fileType",
+                "Unsupported file type",
+                (value) => {
+                  if (!value) return false;
+                  const acceptTypes = field.accept.split(",").map(type => type.trim().toLowerCase());
+                  if (field.multiple) {
+                    return Array.from(value).every((file) =>
+                      acceptTypes.some((type) => file.type.toLowerCase().includes(type))
+                    );
+                  }
+                  return acceptTypes.some((type) => value.type.toLowerCase().includes(type));
+                }
+              );
+            }
+
+            // Always check file size
             fileSchema = fileSchema.test(
-              "fileType",
-              "Unsupported file type",
+              "fileSize",
+              "File size too large (max 2MB)",
               (value) => {
                 if (!value) return false;
-                const acceptTypes = field.accept.split(",").map(type => type.trim().toLowerCase());
                 if (field.multiple) {
-                  return Array.from(value).every((file) =>
-                    acceptTypes.some((type) => file.type.toLowerCase().includes(type))
-                  );
+                  return Array.from(value).every((file) => file.size <= 2 * 1024 * 1024);
                 }
-                return acceptTypes.some((type) => value.type.toLowerCase().includes(type));
+                return value.size <= 2 * 1024 * 1024;
               }
             );
-          }
-          
-          // Always check file size
-          fileSchema = fileSchema.test(
-            "fileSize",
-            "File size too large (max 2MB)",
-            (value) => {
-              if (!value) return false;
-              if (field.multiple) {
-                return Array.from(value).every((file) => file.size <= 2 * 1024 * 1024);
-              }
-              return value.size <= 2 * 1024 * 1024;
-            }
-          );
-          
-          schema[field.name] = fileSchema;
-          break;
-          
+
+            schema[field.name] = fileSchema;
+            break;
+
           default:
             schema[field.name] = Yup.string().required(
               `${field.label} is required`
@@ -672,21 +677,34 @@ const FormDialog = ({
     validateOnChange: true,
     initialValues: fields.reduce((values, field) => {
       values[field.name] = "";
+      if (field.type === "select2") {
+        values[`${field.name}_other`] = "";
+      }
       return values;
     }, {}),
     validationSchema,
     onSubmit: async (values, helpers) => {
       try {
+        let payload = { ...values };
+        fields.forEach((field) => {
+          if (field.type === "select2") {
+            console.log("Payload before other handling:", payload);
+            if (payload[field.name] === "__other__") {
+              payload[field.name] = payload[`${field.name}_other`];
+            }
+            delete payload[`${field.name}_other`]; // helper field hatao
+          }
+        });
         // ✅ Don't set submitting here, let parent handle it
-        const isSuccess = await onSubmit(values, helpers);
+        const isSuccess = await onSubmit(payload, helpers);
         console.log("Success status:", isSuccess);
-        
+
         if (isSuccess) {
           setVisiblePasswords({}); // Clear password visibility
           setOpen(false); // ✅ Close modal only on success
         }
         // ✅ If isSuccess is false, modal stays open
-        
+
       } catch (error) {
         console.error("Submit failed:", error);
         // ✅ On error, modal stays open
@@ -747,7 +765,57 @@ const FormDialog = ({
             ))}
           </select>
         );
-
+      // case "select2":
+      //   return (
+      //     <select
+      //       name={field.name}
+      //       value={formik.values[field.name]}
+      //       onChange={formik.handleChange}
+      //       onBlur={formik.handleBlur}
+      //       className={commonClasses}
+      //     >
+      //       <option value="">Select {field.label}</option>
+      //       {field.options?.map((option) => (
+      //         <option key={option.value} value={option.value}>
+      //           {option.label}
+      //         </option>
+      //       ))}
+      //     </select>
+      //   );
+      case "select2":
+        return (
+          <SearchableSelect
+            label={field.label}
+            options={field.options}
+            value={formik.values[field.name]}
+            onChange={(val) => formik.setFieldValue(field.name, val)}
+            otherValue={formik.values[`${field.name}_other`] || ""}
+            onOtherChange={(val) =>
+              formik.setFieldValue(`${field.name}_other`, val)
+            }
+          />
+        );
+      case "radio":   // 👈 yeh naya case add karo
+        return (
+          <div className="flex gap-4 mt-1">
+            {field.options?.map((option) => (
+              <label key={option.value} className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name={field.name}
+                  value={option.value}
+                  checked={formik.values[field.name] === option.value}
+                  onChange={() =>
+                    formik.setFieldValue(field.name, option.value)
+                  }
+                  onBlur={formik.handleBlur}
+                  className="cursor-pointer"
+                />
+                <span>{option.label}</span>
+              </label>
+            ))}
+          </div>
+        );
       case "textarea":
         return (
           <textarea
@@ -772,7 +840,7 @@ const FormDialog = ({
               const files = field.multiple ? e.currentTarget.files : e.currentTarget.files[0];
               formik.setFieldValue(field.name, files || null);
             }}
-  
+
             onBlur={() => formik.setFieldTouched(field.name, true)}
             className={commonClasses}
             multiple={field.multiple}
@@ -793,7 +861,6 @@ const FormDialog = ({
             className={commonClasses}
           />
         );
-
       default:
         return (
           <input
@@ -835,7 +902,7 @@ const FormDialog = ({
           className={`fixed inset-0 bg-black/50 z-40 ${isDark ? "bg-black/70" : "bg-black/50"
             }`}
         />
-        
+
         <Dialog.Content
           className={`
             fixed z-50 top-1/2 left-1/2 
@@ -882,7 +949,7 @@ const FormDialog = ({
                   Cancel
                 </button>
               </Dialog.Close>
-              
+
               <button
                 type="submit"
                 disabled={formik.isSubmitting}
@@ -916,7 +983,7 @@ const FormDialog = ({
               className={`absolute top-4 right-4 hidden sm:block ${isDark ? "text-white" : "text-gray-500"
                 } cursor-pointer`}
             >
-              <Cross2Icon height={20} width={20}/>
+              <Cross2Icon height={20} width={20} />
             </button>
           </Dialog.Close>
         </Dialog.Content>
