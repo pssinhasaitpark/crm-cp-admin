@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {Lightbox} from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { useDebounce } from "../../hooks/useDebounce";
-
 const statusOptions = ["All", "Active", "Inactive"];
 const formatPrice = (value) => {
   const num = parseFloat(value);
@@ -27,7 +26,6 @@ const renderPriceRange = (min, max) => {
   if (!max) return `Above ${minFormatted}`;
   return `${minFormatted} - ${maxFormatted}`;
 };
-
 const columns = [
   {
     name: "Project Title",
@@ -42,17 +40,21 @@ const columns = [
   {
     name: "Description",
     selector: row => row.description,
-    grow: 2,
+    grow: 1,
     wrap: true,
+    // minWidth: "200px",
+    // maxWidth: "250px",
     cell: row => (
       <div
       title={row.description}
       style={{
-        whiteSpace: "nowrap", //Prevents vertical wrapping
-        overflow: "hidden",  
-        textOverflow: "ellipsis", // Adds '...'
-        maxWidth: "250px", 
-        cursor:'pointer'
+        display: "-webkit-box",
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: "vertical",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        // maxWidth: "200px",
+        cursor: "pointer"
       }}
     >
         {row.description}
@@ -71,13 +73,11 @@ const columns = [
   {
     name: "Image",
     cell: row => {
-      const [open, setOpen] = useState(false);
-  
+      const [open, setOpen] = useState(false);  
       // Convert raw image URLs to the required format
       const slides = row.images?.map((src) => ({ src })) || [];
-  
       return (
-        <div className="py-2 w-20">
+        <div className="py-2 ">
           {slides.length > 0 && (
             <>
               <img
@@ -141,7 +141,6 @@ const columns = [
     $button: true,
   },
 ];
-
 const Projects = () => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -153,9 +152,74 @@ const Projects = () => {
   useEffect(()=>{
    dispatch(fetchProjects(debouncedQuery ? { q: debouncedQuery } : {}))
   },[dispatch, debouncedQuery])
+
+  function convertArrayOfObjectsToCSV(data, columns) {
+    const columnDelimiter = ',';
+    const lineDelimiter = '\n';
+  
+    // Use column names for CSV header, skip buttons or non-exportable columns
+    const keys = columns.filter(col => !col.$button).map(col => col.name);
+  
+    let result = '';
+    result += keys.join(columnDelimiter);
+    result += lineDelimiter;
+  
+    data.forEach(item => {
+      let ctr = 0;
+      columns
+        .filter(col => !col.$button)
+        .forEach(col => {
+          if (ctr > 0) result += columnDelimiter;
+  
+          let cell = '';
+          if (typeof col.selector === 'function') {
+            cell = col.selector(item);
+          } else if (typeof col.selector === 'string') {
+            cell = item[col.selector];
+          }
+  
+          if (cell == null) cell = '';
+  
+          if (Array.isArray(cell)) {
+            cell = cell.join(', ');
+          } else if (typeof cell === 'object') {
+            cell = JSON.stringify(cell);
+          }
+  
+          if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"'))) {
+            cell = `"${cell.replace(/"/g, '""')}"`;
+          }
+  
+          result += cell;
+          ctr++;
+        });
+      result += lineDelimiter;
+    });
+  
+    return result;
+  }
+  
+  function downloadCSV(data, columns) {
+    let csv = convertArrayOfObjectsToCSV(data, columns);
+    if (!csv) return;
+  
+    const filename = 'projects_export.csv';
+  
+    if (!csv.match(/^data:text\/csv/i)) {
+      csv = `data:text/csv;charset=utf-8,${csv}`;
+    }
+  
+    const link = document.createElement('a');
+    link.setAttribute('href', encodeURI(csv));
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+  
     const handleAdd = () => console.log("Add New Channel Partner");
     const handleExport = () => console.log("Export clicked");
-    const handleDownload = () => console.log("Download CSV clicked");
+    const handleDownload = () => { downloadCSV(projectList, columns); };
     const handleSubmit = async (values, { setSubmitting, setErrors,resetForm,  }) => {
       try {
         const formData = new FormData();
@@ -291,7 +355,7 @@ const Projects = () => {
         formFields={projectFormFields}
         onAdd={handleAdd}
         onExport={handleExport}
-        onDownload={handleDownload}
+        // onDownload={handleDownload}
         onSubmit={handleSubmit}
         addLabel="Add Project"
         showFilter={false}
@@ -300,5 +364,4 @@ const Projects = () => {
     </div>
   );
 };
-
 export default Projects;

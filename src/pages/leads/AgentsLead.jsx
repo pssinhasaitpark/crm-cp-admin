@@ -13,6 +13,7 @@ import AssignLeadDialog from '../../components/dialogbox/AssignedDialogbox';
 import { fetchAgents } from "../../redux/slices/agentSlice";
 import ViewModal from '../../components/viewModal/ViewModal';
 import { useParams } from 'react-router-dom';
+import Breadcrumb from '../../components/breadcrumb/Breadcrumb';
 
 const statusOptions = ["All", "New", "Contacted", "Follow Up", "Rejected",];
 const leadStatusStyles = {
@@ -320,6 +321,7 @@ const handleAssign = async (agentId) => {
   ];
   return (
     <div className={`min-h-auto py-6 ${isDark ? "bg-[#1e1e1e] text-gray-100 " : "bg-white text-gray-800"}`}>
+      <Breadcrumb />
       <AgentsLeadTable
         data={agentLeadList}
         columns={columns}
