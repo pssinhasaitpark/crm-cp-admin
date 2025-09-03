@@ -12,6 +12,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 import AssignLeadDialog from '../../components/dialogbox/AssignedDialogbox';
 import { fetchAgents } from "../../redux/slices/agentSlice";
 import ViewModal from '../../components/viewModal/ViewModal';
+import { fetchProjects } from '../../redux/slices/projectsSlice';
 
 const statusOptions = ["All", "New", "Contacted", "Follow Up", "Rejected",];
 const leadStatusStyles = {
@@ -33,6 +34,16 @@ const Leads = () => {
   const [open, setOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState(null);
   const [selectedAgent, setSelectedAgent] = useState("");
+  const { projectList } = useSelector((state) => state.projects);
+  console.log(projectList)
+  // const projectOptions = projectList?.map((project) => ({
+  //   label: project.project_title,
+  //   value: project._id, // ya koi aur field tu chahe toh
+  // }));
+
+  useEffect(() => {
+    dispatch(fetchProjects(debouncedQuery ? { q: debouncedQuery } : {}))
+  }, [dispatch, debouncedQuery])
 
   const handleOpen = (lead) => {
     console.log(lead)
@@ -45,23 +56,23 @@ const Leads = () => {
     dispatch(fetchAgents());
   }, [dispatch]);
 
-const handleAssign = async (agentId) => {
-  if (!agentId) {
-    showError("Please select an agent ❌");
-    return;
-  }
-  try {
-    const res = await dispatch(
-      updateLead({ id: selectedLead._id, assigned_to: agentId }) // ✅ assignTo me agent ki id
-    ).unwrap();
+  const handleAssign = async (agentId) => {
+    if (!agentId) {
+      showError("Please select an agent ❌");
+      return;
+    }
+    try {
+      const res = await dispatch(
+        updateLead({ id: selectedLead._id, assigned_to: agentId }) // ✅ assignTo me agent ki id
+      ).unwrap();
 
-    showSuccess(res.message || "Lead assigned successfully ✅");
-    setOpen(false);
-    dispatch(fetchLeads()); // refresh table
-  } catch (err) {
-    showError(err.message || "Failed to assign ❌");
-  }
-};
+      showSuccess(res.message || "Lead assigned successfully ✅");
+      setOpen(false);
+      dispatch(fetchLeads()); // refresh table
+    } catch (err) {
+      showError(err.message || "Failed to assign ❌");
+    }
+  };
 
 
 
@@ -89,6 +100,7 @@ const handleAssign = async (agentId) => {
     }
   };
   const statusOptions = [
+    "All",                
     "new",
     "contacted",
     "interested",
@@ -155,7 +167,7 @@ const handleAssign = async (agentId) => {
     {
       name: "Date",
       // selector: row => row.date,
-        selector: (row) => dayjs(row.createdAt).format("DD/MM/YYYY"),
+      selector: (row) => dayjs(row.createdAt).format("DD/MM/YYYY"),
     },
     {
       name: "Created By",
@@ -201,7 +213,7 @@ const handleAssign = async (agentId) => {
             </button>
           )} */}
           {row.assigned_to ? (
-            
+
             <button
               onClick={() => handleOpen(row)}
               className="px-2 py-1 text-sm font-medium cursor-pointer"
@@ -261,10 +273,10 @@ const handleAssign = async (agentId) => {
   const handleExport = () => console.log("Export clicked");
   const handleDownload = () => console.log("Download CSV clicked");
   const handleSubmit = async (values, { resetForm }) => {
+    console.log("Form Submitted:", values);
     try {
       const payload = {
         ...values,
-        // date: dayjs(values.date).format("DD/MM/YYYY"), // ✅ formatted date
       };
       const response = await dispatch(createLead(payload)).unwrap();
       showSuccess(response.message || "Lead created successfully");
@@ -296,12 +308,22 @@ const handleAssign = async (agentId) => {
       type: "mobile_number",
       required: true,
     },
+    // {
+    //   name: "interested_in",
+    //   label: "Interested In",
+    //   type: "text",
+    //   required: true,
+    // },
     {
-      name: "interested_in",
-      label: "Interested In",
-      type: "text",
-      required: true,
-    },
+  name: "interested_in",
+  label: "Interested In",
+  type: "select2",
+  required: true,
+  options: projectList.map((p) => ({
+    label: p.project_title,
+    value: p._id,
+  }))
+},
     {
       name: "source",
       label: "Source",

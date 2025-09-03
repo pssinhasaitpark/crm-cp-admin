@@ -1,12 +1,12 @@
 import React from "react";
 import { ChevronDownIcon, UploadIcon, DownloadIcon, PlusIcon } from "@radix-ui/react-icons";
-import { useTheme } from "../../components/context/ThemeProvider";
+import { useTheme } from "../context/ThemeProvider";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 // import "./datepickerTheme.css"
 
 
-const TableHeaderActions = ({
+const AgentsLeadTableActions = ({
   statusFilter = "All",
   setStatusFilter = () => { },
   statusOptions = [],
@@ -102,33 +102,8 @@ const TableHeaderActions = ({
 
         </div>
       )}
-
-      <div className="flex gap-2 flex-wrap">
-        <button
-          type="button"
-          aria-label="Export data"
-          onClick={onExport}
-          className={exportBtn}
-          title="Export"
-        >
-          <UploadIcon className="w-4 h-4" />
-          Export
-        </button>
-        <button
-          type="button"
-          aria-label="Download CSV"
-          onClick={onDownload}
-          className={exportBtn}
-          title="Download CSV"
-        >
-          <DownloadIcon className="w-4 h-4" />
-          Download CSV
-        </button>
-        {/* {addDialogTrigger} */}
-        {showAddButton && addDialogTrigger}
-      </div>
     </div>
   );
 };
 
-export default TableHeaderActions;
+export default AgentsLeadTableActions;
