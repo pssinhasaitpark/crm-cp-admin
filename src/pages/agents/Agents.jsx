@@ -457,7 +457,13 @@ const Agents = () => {
       return false; // ✅ Indicate failure
     }
   };
-
+  const statesList = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+    "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+    "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+    "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+    "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
+  ]
   const agentFormFields = [
     { name: "name", label: "Name", type: "text", required: true },
     { name: "email", label: "Email", type: "email", required: true },
@@ -474,7 +480,7 @@ const Agents = () => {
       type: "mobile_number",
       required: true,
     }, // ✅ FIXED
-    { name: "state", label: "State", type: "text", required: true },
+    { name: "state", label: "State", type: "select", required: true, options: statesList, },
     { name: "firm_name", label: "Firm Name", type: "text", required: true },
     { name: "reraId", label: "RERA ID", type: "text", required: true },
     {
@@ -513,12 +519,12 @@ const Agents = () => {
         }`}
     >
         {/* <Breadcrumb /> */}
-      {error && (
+      {/* {error && (
         <p className="text-center text-red-500">
           {error.message || "Failed to fetch data"}
         </p>
       )}
-      {!error && (
+      {!error && ( */}
         <DataTableComponent
           data={agentList}
           columns={columns}
@@ -532,7 +538,7 @@ const Agents = () => {
           addLabel="New Agent"
           onSubmit={handleSubmit}
         />
-      )}
+      {/* )} */}
       {/* ------- Model For Change the Status of Channel Partner------- */}
       <StatusDialog
         isOpen={isStatusModalOpen}

@@ -425,7 +425,13 @@ const ChannelPartners = () => {
       setSubmitting(false); // Stop loading state
     }
   };
-
+  const statesList = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+    "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+    "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+    "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+    "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
+  ]
   const channelFormFields = [
     { name: "name", label: "Name", type: "text", required: true },
     { name: "email", label: "Email", type: "email", required: true },
@@ -442,7 +448,7 @@ const ChannelPartners = () => {
       type: "mobile_number",
       required: true,
     },
-    { name: "state", label: "State", type: "text", required: true },
+    { name: "state", label: "State", type: "select", required: true,options: statesList, },
     { name: "firm_name", label: "Firm Name", type: "text", required: true },
     {
       name: "reraId",

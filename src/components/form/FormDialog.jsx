@@ -717,7 +717,14 @@ const FormDialog = ({
       ? "bg-gray-800 text-white border-gray-600"
       : "bg-white text-black border-gray-300"
       }`;
-
+    // const dropdownClasses = `w-full  px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDark
+    //   ? "bg-gray-800 text-white border-gray-600"
+    //   : "bg-white text-black border-gray-300"}`;
+    const dropdownClasses = `w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDark
+      ? "bg-gray-800 text-white border-gray-600"
+      : "bg-white text-black border-gray-300"
+    } `;
+  
     // Password / Confirm Password toggle
     if (field.type === "password") {
       const isVisible = visiblePasswords[field.name];
@@ -754,7 +761,7 @@ const FormDialog = ({
             value={formik.values[field.name]}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className={commonClasses}
+            className={dropdownClasses}
           >
             <option value="">Select {field.label}</option>
             {field.options?.map((option) => (
@@ -789,7 +796,7 @@ const FormDialog = ({
             value={formik.values[field.name]}
             onChange={(val) => formik.setFieldValue(field.name, val)}
             otherValue={formik.values[`${field.name}_other`] || ""}
-            onOtherChange={(val) =>
+            onOtherChange={(val) => 
               formik.setFieldValue(`${field.name}_other`, val)
             }
           />
@@ -922,6 +929,7 @@ const FormDialog = ({
               <div key={field.name} className="flex flex-col">
                 <label htmlFor={field.name} className="block text-sm font-medium mb-1">
                   {field.label}
+                  {field.required && <span className="text-red-500"> *</span>}
                 </label>
                 {renderField(field)}
                 {formik.errors[field.name] && formik.touched[field.name] && (
