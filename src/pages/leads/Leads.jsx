@@ -1,3 +1,4 @@
+import { socket } from "../../utils/Socket";
 import React, { useEffect, useState } from 'react'
 import DataTableComponent from '../../components/table/Table'
 import data from '../../utils/Leads'
@@ -35,18 +36,61 @@ const Leads = () => {
   const [selectedLead, setSelectedLead] = useState(null);
   const [selectedAgent, setSelectedAgent] = useState("");
   const { projectList } = useSelector((state) => state.projects);
-  console.log(projectList)
+  // console.log(projectList)
   // const projectOptions = projectList?.map((project) => ({
   //   label: project.project_title,
   //   value: project._id, // ya koi aur field tu chahe toh
   // }));
+// useEffect(() => {
+//   socket.on("connect", () => {
+//     console.log("✅ Admin connected:", socket.id);
+
+//     // Admin join room
+//     socket.emit("join-admin", { adminId: "68a848192f6953e2e590d22a" });
+//   });
+
+//   socket.on("lead-broadcasted", (lead) => {
+//     console.log("📢 Lead broadcasted:", lead);
+//     showSuccess(`Lead broadcasted: ${lead.name}`);
+//     dispatch(fetchLeads());
+//   });
+  
+
+//   socket.on("lead-accepted", (data) => {
+//     console.log("✅ Lead accepted:", data);
+//     showSuccess(`Lead accepted by ${data.acceptedBy?.name || "Unknown"}`);
+//     dispatch(fetchLeads());
+//   });
+
+//   return () => {
+//     socket.off("lead-broadcasted");
+//     socket.off("lead-accepted");
+//   };
+// }, [dispatch]);
+
+  useEffect(() => {
+      socket.on("connect", () => {
+    console.log("✅ Admin connected:", socket.id);
+
+    // Admin join room
+    socket.emit("join-admin", { adminId: "68a848192f6953e2e590d22a" });
+  });
+    // ✅ Jab koi lead accept ho jaye
+    socket.on("lead_accepted", (data) => {
+  console.log("🔔 Lead accepted event:", data);
+  // Yahin pe apn refresh call karenge
+  dispatch(fetchLeads()); 
+});
+
+  }, [dispatch]);
+
 
   useEffect(() => {
     dispatch(fetchProjects(debouncedQuery ? { q: debouncedQuery } : {}))
   }, [dispatch, debouncedQuery])
 
   const handleOpen = (lead) => {
-    console.log(lead)
+    // console.log(lead)
     setSelectedLead(lead);
     setSelectedAgent(lead.assigned_to || "");
     setOpen(true);
@@ -56,23 +100,58 @@ const Leads = () => {
     dispatch(fetchAgents());
   }, [dispatch]);
 
-  const handleAssign = async (agentId) => {
-    if (!agentId) {
-      showError("Please select an agent ❌");
-      return;
-    }
-    try {
-      const res = await dispatch(
-        updateLead({ id: selectedLead._id, assigned_to: agentId }) // ✅ assignTo me agent ki id
-      ).unwrap();
+  // const handleAssign = async (agentId) => {
+  //   if (!agentId) {
+  //     showError("Please select an agent ❌");
+  //     return;
+  //   }
+  //   try {
+  //     const res = await dispatch(
+  //       updateLead({ id: selectedLead._id, assigned_to: agentId }) // ✅ assignTo me agent ki id
+  //     ).unwrap();
 
+  //     showSuccess(res.message || "Lead assigned successfully ✅");
+  //     setOpen(false);
+  //     dispatch(fetchLeads()); // refresh table
+  //     // 🔴 Yeh part new hai (broadcast ke liye):
+  //   if (agentId === "all") {
+  //     socket.emit("broadcast-lead", selectedLead); 
+  //     // backend ko event bhej diya
+  //   }
+  //   } catch (err) {
+  //     showError(err.message || "Failed to assign ❌");
+  //   }
+  // };
+
+const handleAssign = async ({ assigned_to }) => {
+  if (!assigned_to) {
+    showError("Please select an agent ❌");
+    return;
+  }
+
+  try {
+    const res = await dispatch(
+      updateLead({ id: selectedLead._id, assigned_to })
+    ).unwrap();
+
+    if (assigned_to === "all") {
+      showSuccess(res.message || "Lead broadcast successfully ✅");
+
+      // ✅ Broadcast socket event
+      socket.emit("broadcast-lead", {
+        lead: selectedLead,
+        assigned_to: "all",
+      });
+    } else {
       showSuccess(res.message || "Lead assigned successfully ✅");
-      setOpen(false);
-      dispatch(fetchLeads()); // refresh table
-    } catch (err) {
-      showError(err.message || "Failed to assign ❌");
     }
-  };
+
+    setOpen(false);
+    dispatch(fetchLeads());
+  } catch (err) {
+    showError(err.message || "Failed to assign ❌");
+  }
+};
 
 
 
