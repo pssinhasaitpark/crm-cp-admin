@@ -1,33 +1,45 @@
-import React, { useEffect, useState } from 'react'
-import AgentsLeadTable from '../../components/table/AgentsLeadTable'
-import data from '../../utils/Leads'
-import { FiEdit, FiTrash2, FiEye } from 'react-icons/fi';
+import React, { useEffect, useState } from "react";
+import AgentsLeadTable from "../../components/table/AgentsLeadTable";
+import data from "../../utils/Leads";
+import { FiEdit, FiTrash2, FiEye } from "react-icons/fi";
 import { useTheme } from "../../components/context/ThemeProvider";
-import StatusDropdown from '../../components/UI/Dropdown';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchLeads, createLead, fetchMasterStatus, updateLead, fetchLeadsByAgentId } from '../../redux/slices/leadsSlice';
-import { showError, showSuccess } from '../../components/toaster/Toasters';
+import StatusDropdown from "../../components/UI/Dropdown";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchLeads,
+  createLead,
+  fetchMasterStatus,
+  updateLead,
+  fetchLeadsByAgentId,
+} from "../../redux/slices/leadsSlice";
+import { showError, showSuccess } from "../../components/toaster/Toasters";
 import dayjs from "dayjs";
-import { useDebounce } from '../../hooks/useDebounce';
-import AssignLeadDialog from '../../components/dialogbox/AssignedDialogbox';
+import { useDebounce } from "../../hooks/useDebounce";
+import AssignLeadDialog from "../../components/dialogbox/AssignedDialogbox";
 import { fetchAgents } from "../../redux/slices/agentSlice";
-import ViewModal from '../../components/viewModal/ViewModal';
-import { useParams } from 'react-router-dom';
-import Breadcrumb from '../../components/breadcrumb/Breadcrumb';
+import ViewModal from "../../components/viewModal/ViewModal";
+import { useNavigate, useParams } from "react-router-dom";
+import Breadcrumb from "../../components/breadcrumb/Breadcrumb";
+import { ArrowLeftIcon } from "@radix-ui/react-icons";
 
-const statusOptions = ["All", "New", "Contacted", "Follow Up", "Rejected",];
+const statusOptions = ["All", "New", "Contacted", "Follow Up", "Rejected"];
 const leadStatusStyles = {
-  "new": "bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-200",
-  "contacted": "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200",
-  "follow Up": "bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-200",
-  "rejected": "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200"
+  new: "bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-200",
+  contacted:
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200",
+  "follow Up":
+    "bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-200",
+  rejected: "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200",
 };
 const Leads = () => {
   const [isViewModalOpen, setViewModalOpen] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const dispatch = useDispatch();
-  const { agentLeadList, isLoading, error, masterStatus } = useSelector((state) => state.leads);
+  const navigate = useNavigate();
+  const { agentLeadList, isLoading, error, masterStatus } = useSelector(
+    (state) => state.leads
+  );
   const { agentList } = useSelector((state) => state.agents);
   // console.log(agentList)
   const { query } = useSelector((state) => state.search);
@@ -38,7 +50,7 @@ const Leads = () => {
   const { agentIdx } = useParams();
 
   const handleOpen = (lead) => {
-    console.log(lead)
+    console.log(lead);
     setSelectedLead(lead);
     setSelectedAgent(lead.assigned_to || "");
     setOpen(true);
@@ -48,28 +60,26 @@ const Leads = () => {
     dispatch(fetchAgents());
   }, [dispatch]);
 
-const handleAssign = async (agentId) => {
-  if (!agentId) {
-    showError("Please select an agent ❌");
-    return;
-  }
-  try {
-    const res = await dispatch(
-      updateLead({ id: selectedLead._id, assigned_to: agentId }) // ✅ assignTo me agent ki id
-    ).unwrap();
+  const handleAssign = async (agentId) => {
+    if (!agentId) {
+      showError("Please select an agent ❌");
+      return;
+    }
+    try {
+      const res = await dispatch(
+        updateLead({ id: selectedLead._id, assigned_to: agentId }) // ✅ assignTo me agent ki id
+      ).unwrap();
 
-    showSuccess(res.message || "Lead assigned successfully ✅");
-    setOpen(false);
-    // dispatch(fetchLeads()); // refresh table
-    dispatch(fetchLeadsByAgentId({ agentId: agentIdx }));
-  } catch (err) {
-    showError(err.message || "Failed to assign ❌");
-  }
-};
+      showSuccess(res.message || "Lead assigned successfully ✅");
+      setOpen(false);
+      // dispatch(fetchLeads()); // refresh table
+      dispatch(fetchLeadsByAgentId({ agentId: agentIdx }));
+    } catch (err) {
+      showError(err.message || "Failed to assign ❌");
+    }
+  };
 
-
-
-   useEffect(() => {
+  useEffect(() => {
     if (agentIdx) {
       dispatch(fetchLeadsByAgentId({ agentId: agentIdx }));
     }
@@ -107,7 +117,7 @@ const handleAssign = async (agentId) => {
     "lost",
     "on hold",
     "duplicate",
-    "dead lead"
+    "dead lead",
   ];
   // console.log("agentList List:", agentList);
   const handleView = (row) => {
@@ -140,38 +150,38 @@ const handleAssign = async (agentId) => {
   const columns = [
     {
       name: "Name",
-      selector: row => row.name,
+      selector: (row) => row.name,
       sortable: true,
     },
     {
       name: "Email",
-      selector: row => row.email,
+      selector: (row) => row.email,
     },
     {
       name: "Phone",
-      selector: row => row.phone_number,
+      selector: (row) => row.phone_number,
     },
     {
       name: "Interested In",
-      selector: row => row.interested_in,
+      selector: (row) => row.interested_in,
     },
     {
       name: "Source",
-      selector: row => row.source,
+      selector: (row) => row.source,
     },
     {
       name: "Date",
-    //   selector: row => row.date,
-     selector: (row) => dayjs(row.createdAt).format("DD/MM/YYYY"),
+      //   selector: row => row.date,
+      selector: (row) => dayjs(row.createdAt).format("DD/MM/YYYY"),
     },
     {
       name: "Created By",
-      selector: row => row.created_by || "Admin",
+      selector: (row) => row.created_by || "Admin",
       // selector: row => `${row.created_by} (${row.created_by_name || "Admin"}) `,
     },
     {
       name: "Status",
-      selector: row => row.status || "",  // ✅ row.status me object ho sakta hai
+      selector: (row) => row.status || "", // ✅ row.status me object ho sakta hai
       cell: (row) => (
         <StatusDropdown
           value={row.status}
@@ -179,9 +189,9 @@ const handleAssign = async (agentId) => {
           // console.log("Changed:", row.name, "=>", newStatus);
           onChange={(newStatus) => handleStatusChange(row._id, newStatus)}
           // }}
-          options={masterStatus.map(status => ({
-            label: status.name,   // Dropdown me dikhana hai
-            value: status._id     // Backend ko bhejna hai
+          options={masterStatus.map((status) => ({
+            label: status.name, // Dropdown me dikhana hai
+            value: status._id, // Backend ko bhejna hai
           }))}
           isDark={isDark}
         />
@@ -208,7 +218,6 @@ const handleAssign = async (agentId) => {
             </button>
           )} */}
           {row.assigned_to ? (
-            
             <button
               onClick={() => handleOpen(row)}
               className="px-2 py-1 text-sm font-medium cursor-pointer"
@@ -216,7 +225,6 @@ const handleAssign = async (agentId) => {
               {/* {console.log(row)} */}
               {/* {row.assigned_to_name || "Assigned"} */}
               {row.assigned_to_name} ({row.assigned_to_model})
-
             </button>
           ) : (
             <button
@@ -232,7 +240,7 @@ const handleAssign = async (agentId) => {
     },
     {
       name: "Action",
-      cell: row => (
+      cell: (row) => (
         <div className="flex gap-2">
           <button
             title="View"
@@ -260,7 +268,7 @@ const handleAssign = async (agentId) => {
       ignoreRowClick: true,
       $allowOverflow: true,
       $button: true,
-    }
+    },
   ];
   const handleAddMember = (data) => {
     console.log("New Member:", data);
@@ -326,8 +334,20 @@ const handleAssign = async (agentId) => {
     },
   ];
   return (
-    <div className={`min-h-auto py-6 ${isDark ? "bg-[#1e1e1e] text-gray-100 " : "bg-white text-gray-800"}`}>
-      <Breadcrumb />
+    <div
+      className={`min-h-auto py-6 ${
+        isDark ? "bg-[#1e1e1e] text-gray-100 " : "bg-white text-gray-800"
+      }`}
+    >
+       <div className="mb-4">
+      <button  onClick={() => navigate("/agents")}
+        className={`flex items-center gap-2 px-4 py-2 rounded transition cursor-pointer
+        ${isDark ? "bg-blue-500 hover:bg-blue-400 text-gray-100" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+      >
+        <ArrowLeftIcon className="w-4 h-4" />
+       Back to Agents
+      </button>
+      </div>
       <AgentsLeadTable
         data={agentLeadList}
         columns={columns}
@@ -335,7 +355,7 @@ const handleAssign = async (agentId) => {
         filterByStatus={true}
         statusOptions={statusOptions}
         formFields={leadFormFields}
-        formLabel='Add Leads Form'
+        formLabel="Add Leads Form"
         onAdd={handleAdd}
         onExport={handleExport}
         onDownload={handleDownload}
@@ -361,7 +381,7 @@ const handleAssign = async (agentId) => {
         fieldFormatters={fieldFormatters}
       />
     </div>
-  )
-}
+  );
+};
 
-export default Leads
+export default Leads;
