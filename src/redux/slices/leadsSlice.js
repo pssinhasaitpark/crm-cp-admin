@@ -42,9 +42,9 @@ export const fetchMasterStatus = createAsyncThunk(
 // Update Lead
 export const updateLead = createAsyncThunk(
   "leads/update",
-  async ({ id, ...updateddata }, { rejectWithValue }) => {
+  async ({ id, assigned_to }, { rejectWithValue }) => {
     try {
-      const response = await api.patch(`/leads/admin/${id}`, updateddata);
+      const response = await api.patch(`/leads/admin/${id}`, { assigned_to });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
