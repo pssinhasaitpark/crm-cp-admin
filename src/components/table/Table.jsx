@@ -6,6 +6,8 @@ import { useTheme } from "../../components/context/ThemeProvider"; // ✅ Import
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import { LuLoader } from "react-icons/lu";
+
 
 // 👇 Plugin enable karo ek hi jagah (top of file me)
 dayjs.extend(isSameOrAfter);
@@ -26,11 +28,19 @@ const DataTableComponent = ({
   formFields = [],
   formLabel = "Add",
   showAddButton = true,
+  loading = false,
 }) => {
   const { theme } = useTheme(); // ✅ Get theme
   const isDark = theme === "dark";
   const [statusFilter, setStatusFilter] = React.useState("All");
   const [dateFilter, setDateFilter] = React.useState({ from: null, to: null });
+  const Spinner = () => (
+  <div className="flex justify-center items-center h-64">
+    <div className="animate-spin h-10 w-10 text-blue-600">
+      <LuLoader className="w-full h-full" />
+    </div>
+  </div>
+);
   // const filteredData = React.useMemo(() => {
   //   if (!filterByStatus || statusFilter === "All") return data;
   //   return data.filter(
@@ -59,16 +69,19 @@ const filteredData = React.useMemo(() => {
     );
   }
 
-  // ✅ Date range filter
-  if (dateFilter.from && dateFilter.to) {
-    filtered = filtered.filter((item) => {
-      const itemDate = dayjs(item.date); // 👈 safe parse
-      return (
-        itemDate?.isSameOrAfter(dayjs(dateFilter.from), "day") &&
-        itemDate?.isSameOrBefore(dayjs(dateFilter.to), "day")
-      );
-    });
-  }
+if (dateFilter.from && dateFilter.to) {
+  filtered = filtered.filter((item) => {
+    const itemDate = dayjs(item.createdAt); // 👈 backend ka ISO date
+    const fromDate = dayjs(dateFilter.from); // 👈 Date object aa raha hai
+    const toDate = dayjs(dateFilter.to);
+
+    return (
+      itemDate.isSameOrAfter(fromDate, "day") &&
+      itemDate.isSameOrBefore(toDate, "day")
+    );
+  });
+}
+
 
   return filtered;
 }, [data, statusFilter, filterByStatus, dateFilter]);
@@ -140,6 +153,8 @@ const resetDateFilter = () => setDateFilter({ from: null, to: null });
           customStyles={customStyles}
           pagination
           // paginationComponent={MyCustomPagination}
+          progressPending={loading}
+          progressComponent={<Spinner />}
           highlightOnHover
           responsive
           selectableRows
@@ -148,24 +163,9 @@ const resetDateFilter = () => setDateFilter({ from: null, to: null });
           theme={isDark ? "dark" : "light"}
         />
       </div>
+
     </div>
   );
 };
 
 export default DataTableComponent;
-
-const MyCustomPagination = ({ paginationProps }) => {
-  // You get access to props like currentPage, totalRows, rowsPerPage, onChangePage, etc.
-  // You can build your own UI here and call the callbacks accordingly
-  return (
-    <div>
-      <button onClick={() => paginationProps.onChangePage(paginationProps - 1)}>
-        Prev
-      </button>
-      <span>{paginationProps}</span>
-      <button onClick={() => paginationProps.onChangePage(paginationProps + 1)}>
-        Next
-      </button>
-    </div>
-  );
-};

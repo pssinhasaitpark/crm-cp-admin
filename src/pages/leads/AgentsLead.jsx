@@ -1,3 +1,4 @@
+import { socket } from "../../utils/Socket";
 import React, { useEffect, useState } from "react";
 import AgentsLeadTable from "../../components/table/AgentsLeadTable";
 import data from "../../utils/Leads";
@@ -11,6 +12,7 @@ import {
   fetchMasterStatus,
   updateLead,
   fetchLeadsByAgentId,
+  updateStatusLead,
 } from "../../redux/slices/leadsSlice";
 import { showError, showSuccess } from "../../components/toaster/Toasters";
 import dayjs from "dayjs";
@@ -48,6 +50,22 @@ const Leads = () => {
   const [selectedLead, setSelectedLead] = useState(null);
   const [selectedAgent, setSelectedAgent] = useState("");
   const { agentIdx } = useParams();
+useEffect(() => {
+      socket.on("connect", () => {
+    console.log("✅ Admin connected:", socket.id);
+
+    // Admin join room
+    socket.emit("join-admin", { adminId: "68a848192f6953e2e590d22a" });
+  });
+    // ✅ Jab koi lead accept ho jaye
+    socket.on("lead_accepted", (data) => {
+  console.log("🔔 Lead accepted event:", data);
+  // Yahin pe apn refresh call karenge
+  // dispatch(fetchLeads()); 
+   dispatch(fetchLeadsByAgentId({ agentId: agentIdx }));
+});
+
+  }, [dispatch]);
 
   const handleOpen = (lead) => {
     console.log(lead);
@@ -60,19 +78,49 @@ const Leads = () => {
     dispatch(fetchAgents());
   }, [dispatch]);
 
-  const handleAssign = async (agentId) => {
-    if (!agentId) {
+  // const handleAssign = async (agentId) => {
+  //   if (!agentId) {
+  //     showError("Please select an agent ❌");
+  //     return;
+  //   }
+  //   try {
+  //     const res = await dispatch(
+  //       updateLead({ id: selectedLead._id, assigned_to: agentId }) // ✅ assignTo me agent ki id
+  //     ).unwrap();
+
+  //     showSuccess(res.message || "Lead assigned successfully ✅");
+  //     setOpen(false);
+  //     // dispatch(fetchLeads()); // refresh table
+  //     dispatch(fetchLeadsByAgentId({ agentId: agentIdx }));
+  //   } catch (err) {
+  //     showError(err.message || "Failed to assign ❌");
+  //   }
+  // };
+  const handleAssign = async ({ assigned_to }) => {
+    console.log(assigned_to)
+    if (!assigned_to) {
       showError("Please select an agent ❌");
       return;
     }
+  
     try {
       const res = await dispatch(
-        updateLead({ id: selectedLead._id, assigned_to: agentId }) // ✅ assignTo me agent ki id
+        updateLead({ id: selectedLead._id, assigned_to })
       ).unwrap();
-
-      showSuccess(res.message || "Lead assigned successfully ✅");
+  
+      if (assigned_to === "all") {
+        showSuccess(res.message || "Lead broadcast successfully ✅");
+  
+        // ✅ Broadcast socket event
+        socket.emit("broadcast-lead", {
+          lead: selectedLead,
+          assigned_to: "all",
+        });
+      } else {
+        showSuccess(res.message || "Lead assigned successfully ✅");
+      }
+  
       setOpen(false);
-      // dispatch(fetchLeads()); // refresh table
       dispatch(fetchLeadsByAgentId({ agentId: agentIdx }));
     } catch (err) {
       showError(err.message || "Failed to assign ❌");
@@ -94,7 +142,7 @@ const Leads = () => {
     // console.log("Changing status for:", id, "to", newStatus);
     try {
       const res = await dispatch(
-        updateLead({ id, status: newStatus })
+        updateStatusLead({ id, status: newStatus })
       ).unwrap();
 
       showSuccess(res.message || "Lead status updated ✅");
@@ -361,6 +409,7 @@ const Leads = () => {
         onDownload={handleDownload}
         addLabel="Add Lead"
         onSubmit={handleSubmit}
+        loading={isLoading}
       />
       <AssignLeadDialog
         open={open}

@@ -6,7 +6,7 @@ import { FiEdit, FiTrash2, FiEye } from 'react-icons/fi';
 import { useTheme } from "../../components/context/ThemeProvider";
 import StatusDropdown from '../../components/UI/Dropdown';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchLeads, createLead, fetchMasterStatus, updateLead } from '../../redux/slices/leadsSlice';
+import { fetchLeads, createLead, fetchMasterStatus, updateLead, updateStatusLead } from '../../redux/slices/leadsSlice';
 import { showError, showSuccess } from '../../components/toaster/Toasters';
 import dayjs from "dayjs";
 import { useDebounce } from '../../hooks/useDebounce';
@@ -169,7 +169,7 @@ const handleAssign = async ({ assigned_to }) => {
     // console.log("Changing status for:", id, "to", newStatus);
     try {
       const res = await dispatch(
-        updateLead({ id, status: newStatus })
+        updateStatusLead({ id, status: newStatus })
       ).unwrap();
 
       showSuccess(res.message || "Lead status updated ✅");
@@ -432,6 +432,7 @@ const handleAssign = async ({ assigned_to }) => {
         onDownload={handleDownload}
         addLabel="Add Lead"
         onSubmit={handleSubmit}
+        loading={isLoading}
       />
       <AssignLeadDialog
         open={open}

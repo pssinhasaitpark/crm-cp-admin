@@ -94,7 +94,7 @@ const TableHeaderActions = ({
             type="button"
             onClick={resetDateFilter}
             // className="px-3 py-1 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-400 dark:hover:bg-gray-600"
-           className={`px-3 py-1 rounded-md shadow-sm
+           className={`px-3 py-1 rounded-md shadow-sm cursor-pointer hover:shadow-md
     ${isDark ? "bg-gray-800 text-gray-200 border-gray-600" : "bg-white text-gray-800 border-gray-300"}`}
           >
             Reset Dates

@@ -3,6 +3,8 @@ import DataTable from "react-data-table-component";
 import AgentsLeadTableActions from "./AgentsLeadTableActions";
 import FormDialog from "../form/FormDialog";
 import { useTheme } from "../../components/context/ThemeProvider"; // ✅ Import theme context
+import { LuLoader } from "react-icons/lu";
+
 
 const DataTableComponent = ({
   data = [],
@@ -19,11 +21,19 @@ const DataTableComponent = ({
   formFields = [],
   formLabel = "Add",
   showAddButton = true,
+  loading = false,
 }) => {
   const { theme } = useTheme(); // ✅ Get theme
   const isDark = theme === "dark";
   const [statusFilter, setStatusFilter] = React.useState("All");
     const [dateFilter, setDateFilter] = React.useState({ from: null, to: null });
+     const Spinner = () => (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin h-10 w-10 text-blue-600">
+          <LuLoader className="w-full h-full" />
+        </div>
+      </div>
+    );
 
   // const filteredData = React.useMemo(() => {
   //   if (!filterByStatus || statusFilter === "All") return data;
@@ -125,6 +135,8 @@ const DataTableComponent = ({
           customStyles={customStyles}
           pagination
           // paginationComponent={MyCustomPagination}
+            progressPending={loading}
+          progressComponent={<Spinner />}
           highlightOnHover
           responsive
           selectableRows
