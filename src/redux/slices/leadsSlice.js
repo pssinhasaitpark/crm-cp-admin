@@ -51,6 +51,17 @@ export const updateLead = createAsyncThunk(
     }
   }
 );
+export const updateStatusLead = createAsyncThunk(
+  "leads/updateStatusLead",
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const response = await api.patch(`/leads/admin/${id}`, {status} );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
 // 👇 Fetch Leads By Agent ID
 export const fetchLeadsByAgentId = createAsyncThunk(
   "leads/fetchByAgentId",
@@ -164,7 +175,21 @@ const leadsSlice = createSlice({
       .addCase(fetchLeadsByAgentId.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(updateStatusLead.pending, (state) => {
+        state.isLoading = true;
+        state.successMessage = null;
+        state.error = null;
+      })
+      .addCase(updateStatusLead.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.successMessage =
+          action.payload?.message || "Lead status updated successfully.";
+      })
+      .addCase(updateStatusLead.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
   },
 });
 

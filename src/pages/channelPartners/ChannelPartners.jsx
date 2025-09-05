@@ -358,8 +358,9 @@ const ChannelPartners = () => {
     },
     {
       name: "Joined On",
-      selector: (row) => row.createdAt,
-      cell: ({ row }) => dayjs(row?.createdAt).format("DD-MM-YYYY"),
+       selector: (row) => new Date(row.createdAt).toLocaleDateString(),
+      // selector: (row) => row.createdAt,
+      // cell: ({ row }) => dayjs(row?.createdAt).format("DD-MM-YYYY"),
     },
     {
       name: "Action",
