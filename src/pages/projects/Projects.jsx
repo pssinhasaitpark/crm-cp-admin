@@ -145,7 +145,7 @@ const Projects = () => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const dispatch = useDispatch();
-  const {projectList} = useSelector((state)=>state.projects);
+  const {projectList ,isLoading} = useSelector((state)=>state.projects);
    const { query } = useSelector((state) => state.search);
   const debouncedQuery = useDebounce(query, 500);
   
@@ -360,6 +360,7 @@ const Projects = () => {
         addLabel="Add Project"
         showFilter={false}
         formLabel="Add Project Form"
+        loading={isLoading}
       />
     </div>
   );
