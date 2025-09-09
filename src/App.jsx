@@ -4,7 +4,7 @@ import DashboardPage from "./dashboard/Dashboard";
 import DashboardCards from "./components/DashboardsLayouts/DashboardCards";
 import {
   Login,
-  Messages,
+  Chat,
   Agents,
   AgentsLead
 } from "./pages/index.js";
@@ -25,7 +25,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/"  element={ <ProtectedRoute>  <DashboardPage /> </ProtectedRoute>} >
           <Route index element={<DashboardCards />} />
-          <Route path="messages" element={<Messages />} />
+          <Route path="messages" element={<Chat />} />
           <Route path="profile" element={<Leads />} />
                  {/*  Connect Sidebar Routes */}
           <Route path="dashboard" element={<DashboardCards />} />
@@ -38,7 +38,7 @@ function App() {
           {/* Sales (Team Management) */}
           <Route path="sales/bookings" element={<BookingList />} />
           <Route path="sales/payments" element={<PaymentAndInvoice />} />
-          <Route path="sales/wallet" element={<Messages />} />
+          <Route path="sales/wallet" element={<Chat />} />
 
           {/* Reports */}
           <Route path="reports/leads" element={<DashboardCards />} />
@@ -46,7 +46,7 @@ function App() {
           <Route path="reports/payments" element={<DashboardCards />} />
 
           {/* Other */}
-          <Route path="chat-support" element={<Messages />} />
+          <Route path="chat-support" element={<Chat />} />
           <Route path="help" element={<Leads />} />
           <Route path="settings" element={<Leads />} />
         </Route>
