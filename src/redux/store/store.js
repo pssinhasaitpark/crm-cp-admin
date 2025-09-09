@@ -5,6 +5,7 @@ import agentsReducers from './../slices/agentSlice'
 import leadsReducer from './../slices/leadsSlice'
 import searchReducer from './../slices/searchSlice'
 import projectsReducer from '../slices/projectsSlice'
+import chatReducer from '../slices/chatSlice'
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -13,5 +14,6 @@ export const store = configureStore({
     leads: leadsReducer,
     search: searchReducer,
     projects:projectsReducer,
+    chat:chatReducer,
   },
 });

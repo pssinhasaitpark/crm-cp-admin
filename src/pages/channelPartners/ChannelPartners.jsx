@@ -366,7 +366,7 @@ const ChannelPartners = () => {
       name: "Action",
       cell: (row) => (
         <div className="flex gap-2">
-          {/* 👁️ View Button */}
+          {/* View Button */}
           <button
             title="View"
             onClick={() => handleView(row)}

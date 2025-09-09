@@ -36,44 +36,13 @@ const Leads = () => {
   const [selectedLead, setSelectedLead] = useState(null);
   const [selectedAgent, setSelectedAgent] = useState("");
   const { projectList } = useSelector((state) => state.projects);
-  // console.log(projectList)
-  // const projectOptions = projectList?.map((project) => ({
-  //   label: project.project_title,
-  //   value: project._id, // ya koi aur field tu chahe toh
-  // }));
-// useEffect(() => {
-//   socket.on("connect", () => {
-//     console.log("✅ Admin connected:", socket.id);
-
-//     // Admin join room
-//     socket.emit("join-admin", { adminId: "68a848192f6953e2e590d22a" });
-//   });
-
-//   socket.on("lead-broadcasted", (lead) => {
-//     console.log("📢 Lead broadcasted:", lead);
-//     showSuccess(`Lead broadcasted: ${lead.name}`);
-//     dispatch(fetchLeads());
-//   });
-  
-
-//   socket.on("lead-accepted", (data) => {
-//     console.log("✅ Lead accepted:", data);
-//     showSuccess(`Lead accepted by ${data.acceptedBy?.name || "Unknown"}`);
-//     dispatch(fetchLeads());
-//   });
-
-//   return () => {
-//     socket.off("lead-broadcasted");
-//     socket.off("lead-accepted");
-//   };
-// }, [dispatch]);
-
+ 
   useEffect(() => {
       socket.on("connect", () => {
     console.log("✅ Admin connected:", socket.id);
 
     // Admin join room
-    socket.emit("join-admin", { adminId: "68a848192f6953e2e590d22a" });
+    socket.emit("join-admin", { adminId: "68bfcb13841dd6b1b4a3c8ad" });
   });
     // ✅ Jab koi lead accept ho jaye
     socket.on("lead_accepted", (data) => {
@@ -90,7 +59,6 @@ const Leads = () => {
   }, [dispatch, debouncedQuery])
 
   const handleOpen = (lead) => {
-    // console.log(lead)
     setSelectedLead(lead);
     setSelectedAgent(lead.assigned_to || "");
     setOpen(true);
@@ -100,32 +68,10 @@ const Leads = () => {
     dispatch(fetchAgents());
   }, [dispatch]);
 
-  // const handleAssign = async (agentId) => {
-  //   if (!agentId) {
-  //     showError("Please select an agent ❌");
-  //     return;
-  //   }
-  //   try {
-  //     const res = await dispatch(
-  //       updateLead({ id: selectedLead._id, assigned_to: agentId }) // ✅ assignTo me agent ki id
-  //     ).unwrap();
-
-  //     showSuccess(res.message || "Lead assigned successfully ✅");
-  //     setOpen(false);
-  //     dispatch(fetchLeads()); // refresh table
-  //     // 🔴 Yeh part new hai (broadcast ke liye):
-  //   if (agentId === "all") {
-  //     socket.emit("broadcast-lead", selectedLead); 
-  //     // backend ko event bhej diya
-  //   }
-  //   } catch (err) {
-  //     showError(err.message || "Failed to assign ❌");
-  //   }
-  // };
 
 const handleAssign = async ({ assigned_to }) => {
   if (!assigned_to) {
-    showError("Please select an agent ❌");
+    showError("Please select an agent");
     return;
   }
 
@@ -135,47 +81,42 @@ const handleAssign = async ({ assigned_to }) => {
     ).unwrap();
 
     if (assigned_to === "all") {
-      showSuccess(res.message || "Lead broadcast successfully ✅");
+      showSuccess(res.message || "Lead broadcast successfully");
 
-      // ✅ Broadcast socket event
       socket.emit("broadcast-lead", {
         lead: selectedLead,
         assigned_to: "all",
       });
     } else {
-      showSuccess(res.message || "Lead assigned successfully ✅");
+      showSuccess(res.message || "Lead assigned successfully");
     }
 
     setOpen(false);
     dispatch(fetchLeads());
   } catch (err) {
-    showError(err.message || "Failed to assign ❌");
+    showError(err.message || "Failed to assign");
   }
 };
 
 
 
-  // 🔍 Leads Fetch (debounced)
   useEffect(() => {
     dispatch(fetchLeads(debouncedQuery ? { q: debouncedQuery } : {}));
   }, [dispatch, debouncedQuery]);
 
-  // 📌 Master Status ek hi baar laana hai
   useEffect(() => {
     dispatch(fetchMasterStatus());
   }, [dispatch]);
-  // ✅ Status update ke liye separate function
   const handleStatusChange = async (id, newStatus) => {
-    // console.log("Changing status for:", id, "to", newStatus);
     try {
       const res = await dispatch(
         updateStatusLead({ id, status: newStatus })
       ).unwrap();
 
-      showSuccess(res.message || "Lead status updated ✅");
-      dispatch(fetchLeads()); // Refresh karna ho toh
+      showSuccess(res.message || "Lead status updated");
+      dispatch(fetchLeads()); 
     } catch (err) {
-      showError(err || "Failed to update ❌");
+      showError(err || "Failed to update");
     }
   };
   const statusOptions = [
@@ -193,13 +134,11 @@ const handleAssign = async ({ assigned_to }) => {
     "duplicate",
     "dead lead"
   ];
-  // console.log("agentList List:", agentList);
   const handleView = (row) => {
     setSelectedLead(row);
     setViewModalOpen(true);
   };
 
-  // Optional: Custom labels for better UI
   const fieldLabels = {
     mobile_number: "Phone",
     firm_name: "Company",
@@ -214,11 +153,10 @@ const handleAssign = async ({ assigned_to }) => {
     state: "Location",
   };
 
-  // Optional: Formatters for specific fields
   const fieldFormatters = {
     year_of_experience: (val) => `${val} years`,
     createdAt: (val) => dayjs(val).format("DD-MM-YYYY"),
-    status: (val) => val.charAt(0).toUpperCase() + val.slice(1), // capitalize
+    status: (val) => val.charAt(0).toUpperCase() + val.slice(1), 
   };
 
   const columns = [
@@ -245,27 +183,22 @@ const handleAssign = async ({ assigned_to }) => {
     },
     {
       name: "Date",
-      // selector: row => row.date,
       selector: (row) => dayjs(row.createdAt).format("DD/MM/YYYY"),
     },
     {
       name: "Created By",
       selector: row => row.created_by || "Admin",
-      // selector: row => `${row.created_by} (${row.created_by_name || "Admin"}) `,
     },
     {
       name: "Status",
-      selector: row => row.status || "",  // ✅ row.status me object ho sakta hai
+      selector: row => row.status || "",  
       cell: (row) => (
         <StatusDropdown
           value={row.status}
-          // onChange={(newStatus) => {
-          // console.log("Changed:", row.name, "=>", newStatus);
           onChange={(newStatus) => handleStatusChange(row._id, newStatus)}
-          // }}
           options={masterStatus.map(status => ({
-            label: status.name,   // Dropdown me dikhana hai
-            value: status._id     // Backend ko bhejna hai
+            label: status.name,  
+            value: status._id     
           }))}
           isDark={isDark}
         />
@@ -276,28 +209,11 @@ const handleAssign = async ({ assigned_to }) => {
       name: "Assigned To",
       cell: (row) => (
         <div>
-          {/* {row.assigned_to ? (
-            <button
-              onClick={() => handleOpen(row)}
-              className="px-2 py-1 text-sm font-medium cursor-pointer"
-            >
-              {row.name || "Assigned"}
-            </button>
-          ) : (
-            <button
-              onClick={() => handleOpen(row)}
-              className="px-3 py-1 rounded-lg bg-blue-500 text-white hover:bg-blue-600 text-sm cursor-pointer"
-            >
-              Assign
-            </button>
-          )} */}
           {row.assigned_to ? (
-
             <button
               onClick={() => handleOpen(row)}
               className="px-2 py-1 text-sm font-medium cursor-pointer"
             >
-              {/* {console.log(row)} */}
               {row.assigned_to_name || "Assigned"}
             </button>
           ) : (
@@ -346,7 +262,6 @@ const handleAssign = async ({ assigned_to }) => {
   ];
   const handleAddMember = (data) => {
     console.log("New Member:", data);
-    // 🔁 Add logic to update state or send API
   };
   const handleAdd = () => console.log("Add New Channel Partner");
   const handleExport = () => console.log("Export clicked");
@@ -359,7 +274,7 @@ const handleAssign = async ({ assigned_to }) => {
       };
       const response = await dispatch(createLead(payload)).unwrap();
       showSuccess(response.message || "Lead created successfully");
-      dispatch(fetchLeads()); // refresh table
+      dispatch(fetchLeads()); 
       resetForm();
       return true;
     } catch (err) {
@@ -387,12 +302,6 @@ const handleAssign = async ({ assigned_to }) => {
       type: "mobile_number",
       required: true,
     },
-    // {
-    //   name: "interested_in",
-    //   label: "Interested In",
-    //   type: "text",
-    //   required: true,
-    // },
     {
   name: "interested_in",
   label: "Interested In",
@@ -407,15 +316,9 @@ const handleAssign = async ({ assigned_to }) => {
       name: "source",
       label: "Source",
       type: "select",
-      options: ["Website", "Referral", "Walk-in", "Ad Campaign"], // Customize as needed
+      options: ["Website", "Referral", "Walk-in", "Ad Campaign"], 
       required: true,
     },
-    // {
-    //   name: "date",
-    //   label: "Date",
-    //   type: "date",
-    //   required: true,
-    // },
   ];
   return (
     <div className={`min-h-auto py-6 ${isDark ? "bg-[#1e1e1e] text-gray-100 " : "bg-white text-gray-800"}`}>

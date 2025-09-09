@@ -55,7 +55,7 @@ useEffect(() => {
     console.log("✅ Admin connected:", socket.id);
 
     // Admin join room
-    socket.emit("join-admin", { adminId: "68a848192f6953e2e590d22a" });
+    socket.emit("join-admin", { adminId: "68bfcb13841dd6b1b4a3c8ad" });
   });
     // ✅ Jab koi lead accept ho jaye
     socket.on("lead_accepted", (data) => {
@@ -139,14 +139,12 @@ useEffect(() => {
   }, [dispatch]);
   // ✅ Status update ke liye separate function
   const handleStatusChange = async (id, newStatus) => {
-    // console.log("Changing status for:", id, "to", newStatus);
     try {
       const res = await dispatch(
         updateStatusLead({ id, status: newStatus })
       ).unwrap();
 
       showSuccess(res.message || "Lead status updated ✅");
-      // dispatch(fetchLeads()); // Refresh karna ho toh
       dispatch(fetchLeadsByAgentId({ agentId: agentIdx }));
     } catch (err) {
       showError(err || "Failed to update ❌");
@@ -167,13 +165,11 @@ useEffect(() => {
     "duplicate",
     "dead lead",
   ];
-  // console.log("agentList List:", agentList);
   const handleView = (row) => {
     setSelectedLead(row);
     setViewModalOpen(true);
   };
 
-  // Optional: Custom labels for better UI
   const fieldLabels = {
     mobile_number: "Phone",
     firm_name: "Company",
@@ -188,11 +184,10 @@ useEffect(() => {
     state: "Location",
   };
 
-  // Optional: Formatters for specific fields
   const fieldFormatters = {
     year_of_experience: (val) => `${val} years`,
     createdAt: (val) => dayjs(val).format("DD-MM-YYYY"),
-    status: (val) => val.charAt(0).toUpperCase() + val.slice(1), // capitalize
+    status: (val) => val.charAt(0).toUpperCase() + val.slice(1), 
   };
 
   const columns = [
@@ -219,27 +214,22 @@ useEffect(() => {
     },
     {
       name: "Date",
-      //   selector: row => row.date,
       selector: (row) => dayjs(row.createdAt).format("DD/MM/YYYY"),
     },
     {
       name: "Created By",
       selector: (row) => row.created_by || "Admin",
-      // selector: row => `${row.created_by} (${row.created_by_name || "Admin"}) `,
     },
     {
       name: "Status",
-      selector: (row) => row.status || "", // ✅ row.status me object ho sakta hai
+      selector: (row) => row.status || "", 
       cell: (row) => (
         <StatusDropdown
           value={row.status}
-          // onChange={(newStatus) => {
-          // console.log("Changed:", row.name, "=>", newStatus);
           onChange={(newStatus) => handleStatusChange(row._id, newStatus)}
-          // }}
           options={masterStatus.map((status) => ({
-            label: status.name, // Dropdown me dikhana hai
-            value: status._id, // Backend ko bhejna hai
+            label: status.name, 
+            value: status._id, 
           }))}
           isDark={isDark}
         />
@@ -250,28 +240,11 @@ useEffect(() => {
       name: "Assigned To",
       cell: (row) => (
         <div>
-          {/* {row.assigned_to ? (
-            <button
-              onClick={() => handleOpen(row)}
-              className="px-2 py-1 text-sm font-medium cursor-pointer"
-            >
-              {row.name || "Assigned"}
-            </button>
-          ) : (
-            <button
-              onClick={() => handleOpen(row)}
-              className="px-3 py-1 rounded-lg bg-blue-500 text-white hover:bg-blue-600 text-sm cursor-pointer"
-            >
-              Assign
-            </button>
-          )} */}
           {row.assigned_to ? (
             <button
               onClick={() => handleOpen(row)}
               className="px-2 py-1 text-sm font-medium cursor-pointer"
             >
-              {/* {console.log(row)} */}
-              {/* {row.assigned_to_name || "Assigned"} */}
               {row.assigned_to_name} ({row.assigned_to_model})
             </button>
           ) : (
@@ -320,7 +293,6 @@ useEffect(() => {
   ];
   const handleAddMember = (data) => {
     console.log("New Member:", data);
-    // 🔁 Add logic to update state or send API
   };
   const handleAdd = () => console.log("Add New Channel Partner");
   const handleExport = () => console.log("Export clicked");
@@ -329,7 +301,6 @@ useEffect(() => {
     try {
       const payload = {
         ...values,
-        // date: dayjs(values.date).format("DD/MM/YYYY"), // ✅ formatted date
       };
       const response = await dispatch(createLead(payload)).unwrap();
       showSuccess(response.message || "Lead created successfully");
