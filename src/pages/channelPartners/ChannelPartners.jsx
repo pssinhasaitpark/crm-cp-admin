@@ -508,6 +508,7 @@ const ChannelPartners = () => {
           onDownload={handleDownload}
           addLabel="New CPs"
           onSubmit={handleSubmit}
+          loading={isLoading}
         />
       {/* )} */}
       {/* ------- Model For Change the Status of Channel Partner------- */}
