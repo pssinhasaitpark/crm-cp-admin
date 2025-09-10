@@ -25,7 +25,7 @@ export default function ChatWindow({ customer, messages, onSend, themeColor}) {
         </Avatar.Root>
         <div>
           <p className="font-medium">{customer.name}</p>
-          <p className="text-xs text-green-400">Online</p>
+          {/* <p className="text-xs text-green-400">Online</p> */}
         </div>
       </div>
 
